@@ -13,9 +13,10 @@ type SubTareaRepositoryMock struct {
 	CrearLlamado      bool
 	ActualizarLlamado bool
 
-	ErrorCrear        error
-	ErrorObtenerPorId error
-	ErrorActualizar   error
+	ErrorCrear             error
+	ErrorObtenerPorId      error
+	ErrorActualizar        error
+	ErrorObtenerPorTareaId error
 }
 
 var _ repositories.ISubTareaRepository = (*SubTareaRepositoryMock)(nil)
@@ -48,6 +49,11 @@ func (m *SubTareaRepositoryMock) ObtenerPorTareaId(
 	context context.Context,
 	tareaId int64,
 ) ([]entities.SubTarea, error) {
+
+	if m.ErrorObtenerPorTareaId != nil {
+		return nil, m.ErrorObtenerPorTareaId
+	}
+
 	return m.SubTareas, nil
 }
 
