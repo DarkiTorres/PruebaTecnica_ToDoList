@@ -10,32 +10,111 @@ import (
 )
 
 type TareaService struct {
-	tareaRepository    repositories.ITareaRepository
-	subTareaRepository repositories.ISubTareaRepository
+	tareaRepository        repositories.ITareaRepository
+	subTareaRepository     repositories.ISubTareaRepository
+	usuarioRepository      repositories.IUsuarioRepository
+	tareaUsuarioRepository repositories.ITareaUsuarioRepository
 }
 
 func NewTareaService(
 	tareaRepository repositories.ITareaRepository,
 	subTareaRepository repositories.ISubTareaRepository,
+	usuarioRepository repositories.IUsuarioRepository,
+	tareaUsuarioRepository repositories.ITareaUsuarioRepository,
 ) *TareaService {
 	return &TareaService{
-		tareaRepository:    tareaRepository,
-		subTareaRepository: subTareaRepository,
+		tareaRepository:        tareaRepository,
+		subTareaRepository:     subTareaRepository,
+		usuarioRepository:      usuarioRepository,
+		tareaUsuarioRepository: tareaUsuarioRepository,
 	}
 }
 
-func (s *TareaService) CrearTarea(context context.Context, tarea *entities.Tarea) error {
+func (s *TareaService) CrearTarea(
+	context context.Context,
+	tarea *entities.Tarea,
+	asignadoA int,
+) error {
+
 	if err := validators.ValidarTarea(tarea); err != nil {
 		return err
 	}
 
-	return s.tareaRepository.Crear(context, tarea)
+	if asignadoA <= 0 {
+		return errors.New("El usuario asignado no es valido.")
+	}
+
+	creador, err := s.usuarioRepository.ObtenerPorId(
+		context,
+		tarea.CreadoPor,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if creador == nil {
+		return errors.New("El usuario creador no existe")
+	}
+
+	if creador.EstaDesactivado {
+		return errors.New("El usuario creador esta desactivado.")
+	}
+
+	asignado, err := s.usuarioRepository.ObtenerPorId(
+		context,
+		asignadoA,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if asignado == nil {
+		return errors.New("El usuario asignado no existe")
+	}
+
+	if asignado.EstaDesactivado {
+		return errors.New("El usuario asignado esta desactivado.")
+	}
+
+	if creador.RolId == 2 && creador.Id != asignado.Id {
+		return errors.New(
+			"Un contribuidor solamente puede asignarse tareas a si mismo",
+		)
+	}
+
+	if err := s.tareaRepository.Crear(
+		context,
+		tarea,
+	); err != nil {
+		return err
+	}
+
+	tareaUsuario := &entities.TareaUsuario{
+		TareaId:   tarea.Id,
+		UsuarioId: asignado.Id,
+	}
+
+	return s.tareaUsuarioRepository.Crear(
+		context,
+		tareaUsuario,
+	)
 }
 
 func (s *TareaService) CompletarTarea(context context.Context, tareaId int64) error {
+
+	if tareaId <= 0 {
+		return errors.New("el id de la tarea no es válido")
+	}
+
 	tarea, err := s.tareaRepository.ObtenerPorId(context, tareaId)
 	if err != nil {
 		return err
+	}
+
+	if tarea == nil {
+		return errors.New("la tarea no existe")
 	}
 
 	subTareas, err := s.subTareaRepository.ObtenerPorTareaId(context, tareaId)
@@ -94,6 +173,10 @@ func (s *TareaService) EliminarTarea(context context.Context, tareaId int64, mod
 	)
 	if err != nil {
 		return err
+	}
+
+	if tarea == nil {
+		return errors.New("La tarea no existe")
 	}
 
 	ahora := time.Now()
