@@ -60,7 +60,7 @@ func (r *TareaRepositoryPostgres) ObtenerPorId(context context.Context, id int64
 			CreadoPor,
 			ModificadoEl,
 			ModificadoPor
-		From Tareas,
+		From Tareas
 		WHERE Id = $1
 	`
 
@@ -157,7 +157,7 @@ func (r *TareaRepositoryPostgres) Actualizar(context context.Context, tarea *ent
 			PrioridadId = $3,
 			FechaEntrega = $4,
 			EstaTerminado = $5,
-			EstaEliminada = $6,
+			EstaEliminado = $6,
 			ModificadoEl = $7,
 			ModificadoPor = $8
 		WHERE Id = $9
@@ -191,7 +191,7 @@ func (r *TareaRepositoryPostgres) Eliminar(context context.Context, id int64, mo
 	`
 
 	_, err := r.db.Exec(
-		context, query, id,
+		context, query, id, modificadoPor,
 	)
 
 	return err
