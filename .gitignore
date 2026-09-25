@@ -1,2 +1,3 @@
 Servidor/cmd/to-do-server/main.go
 Servidor/.http
+.env
