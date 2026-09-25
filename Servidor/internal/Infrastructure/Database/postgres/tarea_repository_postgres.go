@@ -196,3 +196,22 @@ func (r *TareaRepositoryPostgres) Eliminar(context context.Context, id int64, mo
 
 	return err
 }
+
+func (r *TareaRepositoryPostgres) EliminarFisicoPorId(
+	context context.Context,
+	id int64,
+) error {
+
+	query := `
+		DELETE FROM Tareas
+		WHERE Id = $1
+	`
+
+	_, err := r.db.Exec(
+		context,
+		query,
+		id,
+	)
+
+	return err
+}
