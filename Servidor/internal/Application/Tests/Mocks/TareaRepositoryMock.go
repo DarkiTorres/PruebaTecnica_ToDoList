@@ -7,9 +7,14 @@ import (
 )
 
 type TareaRepositoryMock struct {
-	Tarea             *entities.Tarea
-	ErrorObtenerPorId error
+	Tarea *entities.Tarea
+
+	CrearLlamado      bool
 	ActualizarLlamado bool
+
+	ErrorCrear        error
+	ErrorObtenerPorId error
+	ErrorActualizar   error
 }
 
 var _ repositories.ITareaRepository = (*TareaRepositoryMock)(nil)
@@ -18,6 +23,14 @@ func (m *TareaRepositoryMock) Crear(
 	context context.Context,
 	tarea *entities.Tarea,
 ) error {
+	m.CrearLlamado = true
+
+	if m.ErrorCrear != nil {
+		return m.ErrorCrear
+	}
+
+	m.Tarea = tarea
+
 	return nil
 }
 
@@ -44,6 +57,10 @@ func (m *TareaRepositoryMock) Actualizar(
 	tarea *entities.Tarea,
 ) error {
 	m.ActualizarLlamado = true
+
+	if m.ErrorActualizar != nil {
+		return m.ErrorActualizar
+	}
 
 	m.Tarea = tarea
 
