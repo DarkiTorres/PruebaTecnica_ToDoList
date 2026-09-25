@@ -337,3 +337,240 @@ func TestTareaRepositoryPostgres_Eliminar(t *testing.T) {
 		}
 	}
 }
+
+func TestTareaRepositoryPostgres_EliminarFisicoPorId(t *testing.T) {
+	pool := crearPoolPrueba(t)
+
+	repository := NewTareaRepository(pool)
+	tarea := &entities.Tarea{
+		Titulo:      "Tarea para eliminación física",
+		PrioridadId: 1,
+		CreadoEl:    time.Now(),
+		CreadoPor:   1,
+	}
+
+	err := repository.Crear(
+		context.Background(),
+		tarea,
+	)
+
+	if err != nil {
+		t.Fatalf("No se pudo crear la tarea de prueba: %v", err)
+	}
+
+	err = repository.EliminarFisicoPorId(
+		context.Background(),
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo eliminar físicamente la tarea: %v",
+			err,
+		)
+	}
+
+	tareaEliminada, err := repository.ObtenerPorId(
+		context.Background(),
+		tarea.Id,
+	)
+
+	if err == nil {
+		t.Fatal("Se esperaba un error al consultar una tarea eliminada físicamente")
+	}
+
+	if tareaEliminada != nil {
+		t.Fatal("La tarea no debería existir después de eliminarla físicamente")
+	}
+}
+
+func TestTareaRepositoryPostgres_EliminarFisicoPorId_Cascada(
+	t *testing.T,
+) {
+	pool := crearPoolPrueba(t)
+
+	repository := NewTareaRepository(pool)
+	subTareaRepository := NewSubTareaRepository(pool)
+	tareaUsuarioRepository := NewTareaUsuarioRepository(pool)
+
+	ctx := context.Background()
+
+	// 1. Crear tarea
+	tarea := &entities.Tarea{
+		Titulo:      "Tarea para prueba de cascada",
+		PrioridadId: 1,
+		CreadoEl:    time.Now(),
+		CreadoPor:   1,
+	}
+
+	err := repository.Crear(ctx, tarea)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo crear la tarea de prueba: %v",
+			err,
+		)
+	}
+
+	// 2. Crear tres subtareas
+	subTareas := []*entities.SubTarea{
+		{
+			TareaId:   tarea.Id,
+			Titulo:    "Subtarea 1",
+			CreadoEl:  time.Now(),
+			CreadoPor: 1,
+		},
+		{
+			TareaId:   tarea.Id,
+			Titulo:    "Subtarea 2",
+			CreadoEl:  time.Now(),
+			CreadoPor: 1,
+		},
+		{
+			TareaId:   tarea.Id,
+			Titulo:    "Subtarea 3",
+			CreadoEl:  time.Now(),
+			CreadoPor: 1,
+		},
+	}
+
+	for _, subTarea := range subTareas {
+		err := subTareaRepository.Crear(ctx, subTarea)
+
+		if err != nil {
+			t.Fatalf(
+				"No se pudo crear la subtarea de prueba: %v",
+				err,
+			)
+		}
+	}
+
+	// 3. Asignar la tarea al usuario 1
+	tareaUsuario := &entities.TareaUsuario{
+		TareaId:   tarea.Id,
+		UsuarioId: 1,
+	}
+
+	err = tareaUsuarioRepository.Crear(
+		ctx,
+		tareaUsuario,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo asignar la tarea al usuario: %v",
+			err,
+		)
+	}
+
+	// 4. Comprobar que existen las subtareas
+	subTareasAntes, err := subTareaRepository.ObtenerPorTareaId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron consultar las subtareas: %v",
+			err,
+		)
+	}
+
+	if len(subTareasAntes) != 3 {
+		t.Fatalf(
+			"Se esperaban 3 subtareas, se encontraron %d",
+			len(subTareasAntes),
+		)
+	}
+
+	// 5. Comprobar que existe la asignación
+	asignacionesAntes, err := tareaUsuarioRepository.ObtenerPorTareaId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron consultar las asignaciones: %v",
+			err,
+		)
+	}
+
+	if len(asignacionesAntes) != 1 {
+		t.Fatalf(
+			"Se esperaba 1 asignación, se encontraron %d",
+			len(asignacionesAntes),
+		)
+	}
+
+	// 6. Eliminar físicamente la tarea
+	err = repository.EliminarFisicoPorId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo eliminar físicamente la tarea: %v",
+			err,
+		)
+	}
+
+	// 7. Comprobar que la tarea ya no existe
+	tareaEliminada, err := repository.ObtenerPorId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err == nil {
+		t.Fatal(
+			"Se esperaba un error al consultar la tarea eliminada",
+		)
+	}
+
+	if tareaEliminada != nil {
+		t.Fatal(
+			"La tarea debería haber sido eliminada físicamente",
+		)
+	}
+
+	// 8. Comprobar que las subtareas fueron eliminadas por CASCADE
+	subTareasDespues, err := subTareaRepository.ObtenerPorTareaId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron consultar las subtareas después de eliminar la tarea: %v",
+			err,
+		)
+	}
+
+	if len(subTareasDespues) != 0 {
+		t.Fatalf(
+			"Se esperaban 0 subtareas después de la cascada, se encontraron %d",
+			len(subTareasDespues),
+		)
+	}
+
+	// 9. Comprobar que las asignaciones fueron eliminadas por CASCADE
+	asignacionesDespues, err := tareaUsuarioRepository.ObtenerPorTareaId(
+		ctx,
+		tarea.Id,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron consultar las asignaciones después de eliminar la tarea: %v",
+			err,
+		)
+	}
+
+	if len(asignacionesDespues) != 0 {
+		t.Fatalf(
+			"Se esperaban 0 asignaciones después de la cascada, se encontraron %d",
+			len(asignacionesDespues),
+		)
+	}
+}
