@@ -15,4 +15,6 @@ type ITareaRepository interface {
 	Actualizar(context context.Context, tarea *entities.Tarea) error
 
 	Eliminar(context context.Context, id int64, modificadoPor int) error
+
+	EliminarFisicoPorId(context context.Context, id int64) error
 }
