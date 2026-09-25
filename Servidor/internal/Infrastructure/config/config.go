@@ -22,6 +22,10 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	return FromEnvironment(), nil
+}
+
+func FromEnvironment() *Config {
 	return &Config{
 		AppPort:          os.Getenv("APP_PORT"),
 		DatabaseHost:     os.Getenv("DATABASE_HOST"),
@@ -29,7 +33,7 @@ func Load() (*Config, error) {
 		DatabaseUser:     os.Getenv("DATABASE_USER"),
 		DatabasePassword: os.Getenv("DATABASE_PASSWORD"),
 		DatabaseName:     os.Getenv("DATABASE_NAME"),
-	}, nil
+	}
 }
 
 func (c *Config) GenerateConnectionString() string {
