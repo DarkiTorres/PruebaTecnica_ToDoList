@@ -94,6 +94,6 @@ INSERT INTO TareaXUsuario (
 	UsuarioId
 )
 VALUES (
-	3, 
+	1, 
 	2
 );
