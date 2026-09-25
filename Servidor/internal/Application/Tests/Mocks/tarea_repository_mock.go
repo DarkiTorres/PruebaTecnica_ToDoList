@@ -9,12 +9,15 @@ import (
 type TareaRepositoryMock struct {
 	Tarea *entities.Tarea
 
-	CrearLlamado      bool
-	ActualizarLlamado bool
+	CrearLlamado          bool
+	ActualizarLlamado     bool
+	ObtenerPorIdLlamado   bool
+	EliminarFisicoLlamado bool
 
-	ErrorCrear        error
-	ErrorObtenerPorId error
-	ErrorActualizar   error
+	ErrorCrear          error
+	ErrorObtenerPorId   error
+	ErrorActualizar     error
+	ErrorEliminarFisico error
 }
 
 var _ repositories.ITareaRepository = (*TareaRepositoryMock)(nil)
@@ -38,6 +41,8 @@ func (m *TareaRepositoryMock) ObtenerPorId(
 	context context.Context,
 	id int64,
 ) (*entities.Tarea, error) {
+
+	m.ObtenerPorIdLlamado = true
 
 	if m.ErrorObtenerPorId != nil {
 		return nil, m.ErrorObtenerPorId
@@ -72,5 +77,18 @@ func (m *TareaRepositoryMock) Eliminar(
 	id int64,
 	modificadoPor int,
 ) error {
+	return nil
+}
+
+func (m *TareaRepositoryMock) EliminarFisicoPorId(
+	context context.Context,
+	id int64,
+) error {
+	m.EliminarFisicoLlamado = true
+
+	if m.ErrorEliminarFisico != nil {
+		return m.ErrorEliminarFisico
+	}
+
 	return nil
 }
