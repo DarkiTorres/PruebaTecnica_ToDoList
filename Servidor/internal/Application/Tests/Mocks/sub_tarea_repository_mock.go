@@ -31,6 +31,8 @@ func (m *SubTareaRepositoryMock) Crear(
 		return m.ErrorCrear
 	}
 
+	m.SubTarea = subTarea
+
 	return nil
 }
 
