@@ -11,6 +11,7 @@ import (
 	postgres "to-do-server/internal/Infrastructure/Database/postgres"
 	"to-do-server/internal/Infrastructure/config"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -102,6 +103,13 @@ func main() {
 	// =========================
 
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowCredentials: true,
+	}))
 
 	routes.ConfigurarRutas(
 		router,
