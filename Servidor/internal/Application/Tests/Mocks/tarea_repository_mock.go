@@ -100,3 +100,9 @@ func (m *TareaRepositoryMock) ObtenerPorUsuarioId(
 ) ([]entities.Tarea, error) {
 	return m.Tareas, nil
 }
+
+func (r *TareaRepositoryMock) ObtenerEliminadas(
+	context context.Context,
+) ([]entities.Tarea, error) {
+	return nil, nil
+}

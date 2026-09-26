@@ -19,4 +19,6 @@ type ITareaRepository interface {
 	Eliminar(context context.Context, id int64, modificadoPor int) error
 
 	EliminarFisicoPorId(context context.Context, id int64) error
+
+	ObtenerEliminadas(context.Context) ([]entities.Tarea, error)
 }
