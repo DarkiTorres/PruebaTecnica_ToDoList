@@ -574,3 +574,261 @@ func TestTareaRepositoryPostgres_EliminarFisicoPorId_Cascada(
 		)
 	}
 }
+
+func TestTareaRepositoryPostgres_ObtenerPorUsuarioId(t *testing.T) {
+	pool := crearPoolPrueba(t)
+
+	tareaRepository := NewTareaRepository(pool)
+	tareaUsuarioRepository := NewTareaUsuarioRepository(pool)
+
+	descripcion := "Prueba de consulta por usuario"
+
+	tarea := &entities.Tarea{
+		Titulo:      "Tarea asignada",
+		Descripcion: &descripcion,
+		PrioridadId: 1,
+		CreadoEl:    time.Now(),
+		CreadoPor:   1,
+	}
+
+	err := tareaRepository.Crear(
+		context.Background(),
+		tarea,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo crear la tarea: %v",
+			err,
+		)
+	}
+
+	tareaUsuario := &entities.TareaUsuario{
+		TareaId:   tarea.Id,
+		UsuarioId: 2,
+	}
+
+	err = tareaUsuarioRepository.Crear(
+		context.Background(),
+		tareaUsuario,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo asignar la tarea al usuario: %v",
+			err,
+		)
+	}
+
+	tareas, err := tareaRepository.ObtenerPorUsuarioId(
+		context.Background(),
+		2,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron obtener las tareas del usuario: %v",
+			err,
+		)
+	}
+
+	var encontrada bool
+
+	for _, tareaObtenida := range tareas {
+		if tareaObtenida.Id == tarea.Id {
+			encontrada = true
+			break
+		}
+	}
+
+	if !encontrada {
+		t.Fatalf(
+			"Se esperaba encontrar la tarea %d entre las tareas del usuario",
+			tarea.Id,
+		)
+	}
+}
+
+func TestTareaRepositoryPostgres_ObtenerPorUsuarioId_NoDevuelveTareasDeOtroUsuario(t *testing.T) {
+	pool := crearPoolPrueba(t)
+
+	tareaRepository := NewTareaRepository(pool)
+	tareaUsuarioRepository := NewTareaUsuarioRepository(pool)
+
+	tarea := &entities.Tarea{
+		Titulo:      "Tarea de otro usuario",
+		PrioridadId: 1,
+		CreadoEl:    time.Now(),
+		CreadoPor:   1,
+	}
+
+	err := tareaRepository.Crear(
+		context.Background(),
+		tarea,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo crear la tarea: %v",
+			err,
+		)
+	}
+
+	err = tareaUsuarioRepository.Crear(
+		context.Background(),
+		&entities.TareaUsuario{
+			TareaId:   tarea.Id,
+			UsuarioId: 1,
+		},
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo asignar la tarea: %v",
+			err,
+		)
+	}
+
+	tareas, err := tareaRepository.ObtenerPorUsuarioId(
+		context.Background(),
+		2,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron obtener las tareas: %v",
+			err,
+		)
+	}
+
+	for _, tareaObtenida := range tareas {
+		if tareaObtenida.Id == tarea.Id {
+			t.Fatalf(
+				"La tarea %d no debería aparecer para el usuario 2",
+				tarea.Id,
+			)
+		}
+	}
+}
+
+func TestTareaRepositoryPostgres_ObtenerPorUsuarioId_NoDevuelveTareasEliminadas(t *testing.T) {
+	pool := crearPoolPrueba(t)
+
+	tareaRepository := NewTareaRepository(pool)
+	tareaUsuarioRepository := NewTareaUsuarioRepository(pool)
+
+	tarea := &entities.Tarea{
+		Titulo:      "Tarea eliminada",
+		PrioridadId: 1,
+		CreadoEl:    time.Now(),
+		CreadoPor:   1,
+	}
+
+	err := tareaRepository.Crear(
+		context.Background(),
+		tarea,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo crear la tarea: %v",
+			err,
+		)
+	}
+
+	// Marcamos la tarea como eliminada después de crearla.
+	tarea.EstaEliminada = true
+
+	err = tareaRepository.Actualizar(
+		context.Background(),
+		tarea,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo marcar la tarea como eliminada: %v",
+			err,
+		)
+	}
+
+	err = tareaUsuarioRepository.Crear(
+		context.Background(),
+		&entities.TareaUsuario{
+			TareaId:   tarea.Id,
+			UsuarioId: 2,
+		},
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo asignar la tarea: %v",
+			err,
+		)
+	}
+
+	tareas, err := tareaRepository.ObtenerPorUsuarioId(
+		context.Background(),
+		2,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudieron obtener las tareas: %v",
+			err,
+		)
+	}
+
+	for _, tareaObtenida := range tareas {
+		if tareaObtenida.Id == tarea.Id {
+			t.Fatalf(
+				"La tarea eliminada %d no debería aparecer",
+				tarea.Id,
+			)
+		}
+	}
+}
+
+func TestTareaRepositoryPostgres_ObtenerPorUsuarioId_SinTareas_DevuelveListaVacia(t *testing.T) {
+	pool := crearPoolPrueba(t)
+
+	repository := NewTareaRepository(pool)
+
+	var usuarioId int
+
+	err := pool.QueryRow(
+		context.Background(),
+		`
+			INSERT INTO Usuarios (Nombre, RolId)
+			VALUES ($1, $2)
+			RETURNING Id
+		`,
+		"Usuario sin tareas",
+		1,
+	).Scan(&usuarioId)
+
+	if err != nil {
+		t.Fatalf(
+			"No se pudo crear el usuario de prueba: %v",
+			err,
+		)
+	}
+
+	tareas, err := repository.ObtenerPorUsuarioId(
+		context.Background(),
+		usuarioId,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se esperaba error, se obtuvo: %v",
+			err,
+		)
+	}
+
+	if len(tareas) != 0 {
+		t.Fatalf(
+			"Se esperaban 0 tareas, se obtuvieron %d",
+			len(tareas),
+		)
+	}
+}

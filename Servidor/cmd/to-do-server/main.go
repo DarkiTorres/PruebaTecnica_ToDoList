@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
+	initialization "to-do-server/internal/Infrastructure/Database/Initialization"
 	"to-do-server/internal/Infrastructure/Database/postgres"
 	"to-do-server/internal/Infrastructure/config"
 
@@ -23,6 +25,14 @@ func main() {
 	}
 	defer db.Close()
 
+	ctx := context.Background()
+
+	initializer := initialization.NewDatabaseInitializer(db)
+
+	if err := initializer.Initialize(ctx); err != nil {
+		log.Fatal(err)
+	}
+
 	router := gin.Default()
 
 	router.GET("/health", func(c *gin.Context) {
@@ -38,5 +48,8 @@ func main() {
 		})
 	})
 
-	router.Run(":" + cfg.AppPort)
+	if err := router.Run(":" + cfg.AppPort); err != nil {
+		log.Fatal(err)
+	}
+
 }

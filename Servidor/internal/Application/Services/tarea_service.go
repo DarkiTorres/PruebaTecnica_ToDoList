@@ -190,3 +190,67 @@ func (s *TareaService) EliminarTarea(context context.Context, tareaId int64, mod
 		tarea,
 	)
 }
+
+func (s *TareaService) ObtenerTareaPorId(
+	context context.Context,
+	tareaId int64,
+) (*entities.Tarea, error) {
+
+	if tareaId <= 0 {
+		return nil, errors.New("el id de la tarea no es válido")
+	}
+
+	tarea, err := s.tareaRepository.ObtenerPorId(
+		context,
+		tareaId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if tarea == nil {
+		return nil, errors.New("la tarea no existe")
+	}
+
+	return tarea, nil
+}
+
+func (s *TareaService) ObtenerTareas(
+	context context.Context,
+) ([]entities.Tarea, error) {
+
+	return s.tareaRepository.ObtenerTodos(context)
+}
+
+func (s *TareaService) ObtenerTareasPorUsuario(
+	context context.Context,
+	usuarioId int,
+) ([]entities.Tarea, error) {
+
+	if usuarioId <= 0 {
+		return nil, errors.New("el id del usuario no es válido")
+	}
+
+	usuario, err := s.usuarioRepository.ObtenerPorId(
+		context,
+		usuarioId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if usuario == nil {
+		return nil, errors.New("el usuario no existe")
+	}
+
+	if usuario.EstaDesactivado {
+		return nil, errors.New("el usuario está desactivado")
+	}
+
+	return s.tareaRepository.ObtenerPorUsuarioId(
+		context,
+		usuarioId,
+	)
+}
