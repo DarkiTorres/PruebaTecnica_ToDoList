@@ -215,3 +215,74 @@ func (r *TareaRepositoryPostgres) EliminarFisicoPorId(
 
 	return err
 }
+
+func (r *TareaRepositoryPostgres) ObtenerPorUsuarioId(
+	context context.Context,
+	usuarioId int,
+) ([]entities.Tarea, error) {
+
+	query := `
+		SELECT
+			t.Id,
+			t.Titulo,
+			t.Descripcion,
+			t.PrioridadId,
+			t.FechaEntrega,
+			t.EstaTerminado,
+			t.EstaEliminado,
+			t.CreadoEl,
+			t.CreadoPor,
+			t.ModificadoEl,
+			t.ModificadoPor
+		FROM Tareas t
+		INNER JOIN TareaXUsuario txu
+			ON txu.TareaId = t.Id
+		WHERE txu.UsuarioId = $1
+			AND t.EstaEliminado = FALSE
+		ORDER BY t.Id
+	`
+
+	rows, err := r.db.Query(
+		context,
+		query,
+		usuarioId,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var tareas []entities.Tarea
+
+	for rows.Next() {
+		var tarea entities.Tarea
+
+		err := rows.Scan(
+			&tarea.Id,
+			&tarea.Titulo,
+			&tarea.Descripcion,
+			&tarea.PrioridadId,
+			&tarea.FechaEntrega,
+			&tarea.EstaTerminada,
+			&tarea.EstaEliminada,
+			&tarea.CreadoEl,
+			&tarea.CreadoPor,
+			&tarea.ModificadoEl,
+			&tarea.ModificadoPor,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tareas, nil
+}

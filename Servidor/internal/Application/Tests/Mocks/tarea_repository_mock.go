@@ -7,7 +7,8 @@ import (
 )
 
 type TareaRepositoryMock struct {
-	Tarea *entities.Tarea
+	Tarea  *entities.Tarea
+	Tareas []entities.Tarea
 
 	CrearLlamado          bool
 	ActualizarLlamado     bool
@@ -91,4 +92,11 @@ func (m *TareaRepositoryMock) EliminarFisicoPorId(
 	}
 
 	return nil
+}
+
+func (m *TareaRepositoryMock) ObtenerPorUsuarioId(
+	context context.Context,
+	usuarioId int,
+) ([]entities.Tarea, error) {
+	return m.Tareas, nil
 }

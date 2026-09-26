@@ -12,6 +12,8 @@ type ITareaRepository interface {
 
 	ObtenerTodos(context context.Context) ([]entities.Tarea, error)
 
+	ObtenerPorUsuarioId(context context.Context, usuarioId int) ([]entities.Tarea, error)
+
 	Actualizar(context context.Context, tarea *entities.Tarea) error
 
 	Eliminar(context context.Context, id int64, modificadoPor int) error
