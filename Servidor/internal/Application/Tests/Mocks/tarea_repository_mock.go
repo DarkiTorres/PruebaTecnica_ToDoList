@@ -49,7 +49,14 @@ func (m *TareaRepositoryMock) ObtenerPorId(
 		return nil, m.ErrorObtenerPorId
 	}
 
-	return m.Tarea, nil
+	for i := range m.Tareas {
+		if m.Tareas[i].Id == id {
+			return &m.Tareas[i], nil
+		}
+	}
+
+	return nil, nil
+	// return m.Tarea, nil
 }
 
 func (m *TareaRepositoryMock) ObtenerTodos(
@@ -99,4 +106,10 @@ func (m *TareaRepositoryMock) ObtenerPorUsuarioId(
 	usuarioId int,
 ) ([]entities.Tarea, error) {
 	return m.Tareas, nil
+}
+
+func (r *TareaRepositoryMock) ObtenerEliminadas(
+	context context.Context,
+) ([]entities.Tarea, error) {
+	return nil, nil
 }

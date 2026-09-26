@@ -286,3 +286,65 @@ func (r *TareaRepositoryPostgres) ObtenerPorUsuarioId(
 
 	return tareas, nil
 }
+
+func (r *TareaRepositoryPostgres) ObtenerEliminadas(
+	context context.Context,
+) ([]entities.Tarea, error) {
+
+	query := `
+		SELECT
+			Id,
+			Titulo,
+			Descripcion,
+			PrioridadId,
+			FechaEntrega,
+			EstaTerminado,
+			EstaEliminado,
+			CreadoEl,
+			CreadoPor,
+			ModificadoEl,
+			ModificadoPor
+		FROM Tareas
+		WHERE EstaEliminado = TRUE
+		ORDER BY Id
+	`
+
+	rows, err := r.db.Query(context, query)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tareas []entities.Tarea
+
+	for rows.Next() {
+		var tarea entities.Tarea
+
+		err := rows.Scan(
+			&tarea.Id,
+			&tarea.Titulo,
+			&tarea.Descripcion,
+			&tarea.PrioridadId,
+			&tarea.FechaEntrega,
+			&tarea.EstaTerminada,
+			&tarea.EstaEliminada,
+			&tarea.CreadoEl,
+			&tarea.CreadoPor,
+			&tarea.ModificadoEl,
+			&tarea.ModificadoPor,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tareas, nil
+}

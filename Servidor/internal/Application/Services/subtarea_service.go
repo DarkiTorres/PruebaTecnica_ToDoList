@@ -5,9 +5,12 @@ import (
 	"errors"
 	"time"
 	"to-do-server/internal/Application/Interfaces/repositories"
+	interfaces "to-do-server/internal/Application/Interfaces/services"
 	validators "to-do-server/internal/Application/Validators"
 	entities "to-do-server/internal/Domain/Entities"
 )
+
+var _ interfaces.ISubTareaService = (*SubTareaService)(nil)
 
 type SubTareaService struct {
 	subTareaRepository repositories.ISubTareaRepository
@@ -33,6 +36,10 @@ func (s *SubTareaService) CrearSubTarea(context context.Context, subTarea *entit
 	)
 	if err != nil {
 		return err
+	}
+
+	if tarea == nil {
+		return errors.New("la tarea no existe")
 	}
 
 	if tarea.EstaEliminada {
@@ -69,6 +76,10 @@ func (s *SubTareaService) ActualizarSubTarea(context context.Context, subTarea *
 		return err
 	}
 
+	if subTareaActual == nil {
+		return errors.New("la subtarea no existe")
+	}
+
 	if subTareaActual.EstaEliminada {
 		return errors.New(
 			"No se puede actualizar una subtarea eliminada.",
@@ -96,6 +107,9 @@ func (s *SubTareaService) EliminarSubTarea(context context.Context, subTareaId i
 	)
 	if err != nil {
 		return err
+	}
+	if subTarea == nil {
+		return errors.New("la subtarea no existe")
 	}
 
 	if subTarea.EstaEliminada {
@@ -127,6 +141,10 @@ func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId 
 	)
 	if err != nil {
 		return err
+	}
+
+	if subTarea == nil {
+		return errors.New("la subtarea no existe")
 	}
 
 	if subTarea.EstaEliminada {
