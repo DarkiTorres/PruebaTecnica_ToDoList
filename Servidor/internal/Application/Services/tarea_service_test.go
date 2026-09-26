@@ -1633,3 +1633,210 @@ func TestEliminarTarea_TareaInexistente_RegresaError(t *testing.T) {
 		t.Fatal("Actualizar no debería haberse llamado")
 	}
 }
+
+func TestObtenerTareasPorUsuario_UsuarioValido_DevuelveTareas(t *testing.T) {
+
+	tareaRepository := &mocks.TareaRepositoryMock{
+		Tareas: []entities.Tarea{
+			{
+				Id:          1,
+				Titulo:      "Estudiar Go",
+				PrioridadId: 1,
+			},
+			{
+				Id:          2,
+				Titulo:      "Estudiar PostgreSQL",
+				PrioridadId: 2,
+			},
+		},
+	}
+
+	subTareaRepository := &mocks.SubTareaRepositoryMock{}
+
+	usuarioRepository := &mocks.UsuarioRepositoryMock{
+		Usuario: &entities.Usuario{
+			Id:              1,
+			Nombre:          "Lider",
+			RolId:           1,
+			EstaDesactivado: false,
+		},
+	}
+
+	tareaUsuarioRepository := &mocks.TareaUsuarioRepositoryMock{}
+
+	service := NewTareaService(
+		tareaRepository,
+		subTareaRepository,
+		usuarioRepository,
+		tareaUsuarioRepository,
+	)
+
+	tareas, err := service.ObtenerTareasPorUsuario(
+		context.Background(),
+		1,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se esperaba error, se obtuvo: %v",
+			err,
+		)
+	}
+
+	if len(tareas) != 2 {
+		t.Fatalf(
+			"Se esperaban 2 tareas, se obtuvieron %d",
+			len(tareas),
+		)
+	}
+
+	if tareas[0].Id != 1 {
+		t.Fatalf("Se esperaba la tarea con Id 1")
+	}
+
+	if tareas[1].Id != 2 {
+		t.Fatalf("Se esperaba la tarea con Id 2")
+	}
+}
+
+func TestObtenerTareasPorUsuario_UsuarioInexistente_DevuelveError(t *testing.T) {
+
+	tareaRepository := &mocks.TareaRepositoryMock{}
+	subTareaRepository := &mocks.SubTareaRepositoryMock{}
+
+	usuarioRepository := &mocks.UsuarioRepositoryMock{
+		Usuario: nil,
+	}
+
+	tareaUsuarioRepository := &mocks.TareaUsuarioRepositoryMock{}
+
+	service := NewTareaService(
+		tareaRepository,
+		subTareaRepository,
+		usuarioRepository,
+		tareaUsuarioRepository,
+	)
+
+	tareas, err := service.ObtenerTareasPorUsuario(
+		context.Background(),
+		99,
+	)
+
+	if err == nil {
+		t.Fatal("Se esperaba un error")
+	}
+
+	if tareas != nil {
+		t.Fatal("No se esperaban tareas")
+	}
+}
+
+func TestObtenerTareasPorUsuario_UsuarioDesactivado_DevuelveError(t *testing.T) {
+
+	tareaRepository := &mocks.TareaRepositoryMock{}
+	subTareaRepository := &mocks.SubTareaRepositoryMock{}
+
+	usuarioRepository := &mocks.UsuarioRepositoryMock{
+		Usuario: &entities.Usuario{
+			Id:              1,
+			Nombre:          "Usuario desactivado",
+			RolId:           2,
+			EstaDesactivado: true,
+		},
+	}
+
+	tareaUsuarioRepository := &mocks.TareaUsuarioRepositoryMock{}
+
+	service := NewTareaService(
+		tareaRepository,
+		subTareaRepository,
+		usuarioRepository,
+		tareaUsuarioRepository,
+	)
+
+	tareas, err := service.ObtenerTareasPorUsuario(
+		context.Background(),
+		1,
+	)
+
+	if err == nil {
+		t.Fatal("Se esperaba un error")
+	}
+
+	if tareas != nil {
+		t.Fatal("No se esperaban tareas")
+	}
+}
+
+func TestObtenerTareasPorUsuario_SinTareas_DevuelveListaVacia(t *testing.T) {
+
+	tareaRepository := &mocks.TareaRepositoryMock{
+		Tareas: []entities.Tarea{},
+	}
+
+	subTareaRepository := &mocks.SubTareaRepositoryMock{}
+
+	usuarioRepository := &mocks.UsuarioRepositoryMock{
+		Usuario: &entities.Usuario{
+			Id:              1,
+			Nombre:          "Contribuidor",
+			RolId:           2,
+			EstaDesactivado: false,
+		},
+	}
+
+	tareaUsuarioRepository := &mocks.TareaUsuarioRepositoryMock{}
+
+	service := NewTareaService(
+		tareaRepository,
+		subTareaRepository,
+		usuarioRepository,
+		tareaUsuarioRepository,
+	)
+
+	tareas, err := service.ObtenerTareasPorUsuario(
+		context.Background(),
+		1,
+	)
+
+	if err != nil {
+		t.Fatalf(
+			"No se esperaba error, se obtuvo: %v",
+			err,
+		)
+	}
+
+	if tareas == nil {
+		t.Fatal("Se esperaba una lista vacía, no nil")
+	}
+
+	if len(tareas) != 0 {
+		t.Fatalf(
+			"Se esperaban 0 tareas, se obtuvieron %d",
+			len(tareas),
+		)
+	}
+}
+
+func TestObtenerTareasPorUsuario_IdInvalido_DevuelveError(t *testing.T) {
+
+	service := NewTareaService(
+		&mocks.TareaRepositoryMock{},
+		&mocks.SubTareaRepositoryMock{},
+		&mocks.UsuarioRepositoryMock{},
+		&mocks.TareaUsuarioRepositoryMock{},
+	)
+
+	tareas, err := service.ObtenerTareasPorUsuario(
+		context.Background(),
+		0,
+	)
+
+	if err == nil {
+		t.Fatal("Se esperaba un error")
+	}
+
+	if tareas != nil {
+		t.Fatal("No se esperaban tareas")
+	}
+}
