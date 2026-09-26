@@ -3,16 +3,20 @@ package main
 import (
 	"context"
 	"log"
+
+	handlers "to-do-server/internal/Api/Handlers"
+	routes "to-do-server/internal/Api/Routes"
+	services "to-do-server/internal/Application/Services"
 	initialization "to-do-server/internal/Infrastructure/Database/Initialization"
-	"to-do-server/internal/Infrastructure/Database/postgres"
+	postgres "to-do-server/internal/Infrastructure/Database/postgres"
 	"to-do-server/internal/Infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	cfg, err := config.Load()
 
+	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,23 +37,86 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// =========================
+	// REPOSITORIES
+	// =========================
+
+	tareaRepository := postgres.NewTareaRepository(db)
+
+	subTareaRepository := postgres.NewSubTareaRepository(db)
+
+	usuarioRepository := postgres.NewUsuarioRepository(db)
+
+	tareaUsuarioRepository := postgres.NewTareaUsuarioRepository(db)
+
+	prioridadRepository := postgres.NewPrioridadRepository(db)
+
+	// =========================
+	// SERVICES
+	// =========================
+
+	usuarioService := services.NewUsuarioService(
+		usuarioRepository,
+	)
+
+	prioridadService := services.NewPrioridadService(
+		prioridadRepository,
+	)
+
+	subTareaService := services.NewSubTareaService(
+		subTareaRepository,
+		tareaRepository,
+	)
+
+	tareaService := services.NewTareaService(
+		tareaRepository,
+		subTareaRepository,
+		usuarioRepository,
+		tareaUsuarioRepository,
+	)
+
+	// =========================
+	// HANDLERS
+	// =========================
+
+	usuarioHandler := handlers.NewUsuarioHandler(
+		usuarioService,
+	)
+
+	prioridadHandler := handlers.NewPrioridadHandler(
+		prioridadService,
+	)
+
+	subTareaHandler := handlers.NewSubTareaHandler(
+		subTareaService,
+	)
+
+	tareaHandler := handlers.NewTareaHandler(
+		tareaService,
+		subTareaService,
+		subTareaRepository,
+	)
+
+	// =========================
+	// ROUTER
+	// =========================
+
 	router := gin.Default()
 
-	router.GET("/health", func(c *gin.Context) {
-		if err := db.Ping(c.Request.Context()); err != nil {
-			c.JSON(503, gin.H{
-				"status":   "error",
-				"database": "disconnected",
-			})
-		}
-		c.JSON(200, gin.H{
-			"status":   "ok",
-			"database": "connected",
-		})
-	})
+	routes.ConfigurarRutas(
+		router,
+		tareaHandler,
+		subTareaHandler,
+		usuarioHandler,
+		prioridadHandler,
+		db,
+	)
+
+	// =========================
+	// SERVER
+	// =========================
 
 	if err := router.Run(":" + cfg.AppPort); err != nil {
 		log.Fatal(err)
 	}
-
 }
