@@ -8,8 +8,8 @@
             class="usuario-button"
             (click)="cambiarMenu()"
         >
-            @if (usuarioActual) {
-                {{ usuarioActual.Nombre }}
+            @if (usuarioActual()) {
+                {{ usuarioActual()!.Nombre }}
             }
 
             <span>▼</span>

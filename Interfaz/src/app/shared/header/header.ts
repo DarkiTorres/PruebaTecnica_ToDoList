@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Usuario } from '../../models/usuario';
+import { UsuarioStateService } from '../../core/services/usuario-state';
 
 @Component({
   selector: 'app-header',
@@ -10,11 +11,13 @@ import { Usuario } from '../../models/usuario';
 })
 export class Header {
   private readonly usuarioService = inject(UsuarioService);
+  private readonly usuarioState = inject(UsuarioStateService);
 
   usuarios: Usuario[] = [];
-  usuarioActual: Usuario | null = null;
 
   menuAbierto = false;
+
+  readonly usuarioActual = this.usuarioState.usuarioActual;
 
   ngOnInit(): void {
     this.usuarioService.obtenerTodos().subscribe({
@@ -22,7 +25,7 @@ export class Header {
         this.usuarios = usuarios;
 
         if (usuarios.length > 0) {
-          this.usuarioActual = usuarios[0];
+          this.usuarioState.establecerUsuario(usuarios[0]);
         }
       },
       error: error => {
@@ -36,7 +39,7 @@ export class Header {
   }
 
   seleccionarUsuario(usuario: Usuario): void {
-    this.usuarioActual = usuario;
+    this.usuarioState.establecerUsuario(usuario);
     this.menuAbierto = false;
   }
 
