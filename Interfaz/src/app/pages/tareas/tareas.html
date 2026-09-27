@@ -29,7 +29,7 @@
 
 
     <!-- Tareas -->
-    @for (tarea of tareas(); track tarea.id) {
+    @for (tarea of obtenerTareasPagina(); track tarea.id) {
 
       <article class="tarea-row">
 
@@ -48,8 +48,11 @@
         </div>
 
 
-        <div class="tarea-prioridad">
-          Prioridad {{ tarea.prioridadId }}
+        <div 
+            class="prioridad"
+            [class]="obtenerClasePrioridad(tarea.prioridadId)"
+        >
+          {{ obtenerDescripcionPrioridad(tarea.prioridadId) }}
         </div>
 
 
@@ -65,40 +68,77 @@
 
 
         <div class="tarea-estado">
+            <label class="switch">
 
-          @if (tarea.estaTerminada) {
-            <span class="estado terminada">
-              Terminada
-            </span>
-          } @else {
-            <span class="estado pendiente">
-              Pendiente
-            </span>
-          }
+                <input 
+                    type="checkbox" 
+                    [checked]="tarea.estaTerminada" 
+                    (change)="cambiarEstadoTarea(tarea, $event)"
+                    >
+                <span class="slider"></span>
 
+            </label>
         </div>
 
 
         <div class="tarea-actions">
-
-          <button title="Editar">
-            ✏️
-          </button>
-
-          <button title="Subtareas">
-            ☷
-          </button>
-
-          <button title="Eliminar">
-            🗑️
-          </button>
-
+            <button title="Editar">
+                ✏️
+            </button>
+            <button title="Subtareas" (click)="verSubTareas(tarea)">
+                ☷
+            </button>
+            <button title="Eliminar" (click)="eliminarTarea(tarea.id)">
+                🗑️
+            </button>
         </div>
 
       </article>
 
     }
 
+    <div class="paginacion">
+        <button
+            [disabled]="paginaActual() === 1"
+            (click)="cambiarPagina(paginaActual() - 1)"
+            >
+            ←
+        </button>
+
+        @for (pagina of paginas; track pagina) {
+            <button
+            [class.activa]="paginaActual() === pagina"
+            (click)="cambiarPagina(pagina)"
+            >
+            {{ pagina }}
+            </button>
+        }
+
+        <button
+        [disabled]="paginaActual() === obtenerTotalPaginas()"
+        (click)="cambiarPagina(paginaActual() + 1)"
+        >
+            →
+        </button>
+
+    </div>
+
   </section>
 
 </div>
+
+@if (mostrarModal) {
+  <app-modal
+    [titulo]="tituloModal"
+    [mensaje]="mensajeModal"
+    (cerrar)="cerrarModal()"
+  />
+}
+
+@if (mostrarSubTareas()) {
+  <app-sub-tareas-modal
+    [tarea]="tareaSeleccionada()"
+    [subtareas]="subTareasSeleccionadas()"
+    (cerrar)="cerrarSubTareas()"
+  />
+}
