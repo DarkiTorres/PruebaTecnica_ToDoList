@@ -42,4 +42,12 @@ export class SubTareaService extends ApiService {
             }
         );
     }
+    completar(id: number, estaTerminada: boolean): Observable<void> {
+        return this.http.patch<void>(
+            `${this.apiUrl}/subtareas/${id}/completar`,
+            {
+                estaTerminada
+            }
+        );
+    }
 }

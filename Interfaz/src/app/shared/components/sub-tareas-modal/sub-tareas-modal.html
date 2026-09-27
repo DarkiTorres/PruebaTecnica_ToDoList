@@ -36,14 +36,15 @@
 
           <div class="subtarea">
 
-            <div
-              class="subtarea-estado"
-              [class.completada]="subtarea.estaTerminada"
-            >
-              @if (subtarea.estaTerminada) {
-                ✓
-              }
-            </div>
+            <label class="switch">
+                <input
+                    type="checkbox"
+                    [checked]="subtarea.estaTerminada"
+                    (change)="cambiarEstadoSubTarea(subtarea, $event)"
+                >
+                
+                <span class="slider"></span>
+            </label>
 
             <span
               [class.completada]="subtarea.estaTerminada"
