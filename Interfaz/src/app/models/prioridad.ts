@@ -1,4 +1,4 @@
 export interface Prioridad {
-    id: number;
-    descripcion: string;
+    Id: number;
+    Descripcion: string;
 }
