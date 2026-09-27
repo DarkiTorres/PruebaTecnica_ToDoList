@@ -13,6 +13,7 @@ export class SubTareaService extends ApiService {
             `${this.apiUrl}/subtareas/${id}`
         )
     }
+
     obtenerPorTarea(tareaId: number): Observable<SubTarea[]> {
         return this.http.get<SubTarea[]>(
             `${this.apiUrl}/tareas/${tareaId}/subtareas`
