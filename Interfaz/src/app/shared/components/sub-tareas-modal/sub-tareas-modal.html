@@ -1,0 +1,75 @@
+<div class="modal-overlay">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <div>
+        <h2>Subtareas</h2>
+
+        @if (tarea) {
+          <p>{{ tarea.titulo }}</p>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="btn-cerrar"
+        (click)="cerrarModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="subtareas-lista">
+
+      @if (!subtareas || subtareas.length === 0) {
+
+        <p class="sin-subtareas">
+          Esta tarea no tiene subtareas.
+        </p>
+
+      } @else {
+
+        @for (subtarea of subtareas; track subtarea.id) {
+
+          <div class="subtarea">
+
+            <div
+              class="subtarea-estado"
+              [class.completada]="subtarea.estaTerminada"
+            >
+              @if (subtarea.estaTerminada) {
+                ✓
+              }
+            </div>
+
+            <span
+              [class.completada]="subtarea.estaTerminada"
+            >
+              {{ subtarea.titulo }}
+            </span>
+
+          </div>
+
+        }
+
+      }
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="btn-nueva"
+      >
+        + Nueva subtarea
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
