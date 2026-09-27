@@ -1,0 +1,104 @@
+<div class="tareas-page">
+
+  <header class="tareas-header">
+
+    <div>
+      <h1>Tareas</h1>
+      <p>Gestiona tus tareas y pendientes</p>
+    </div>
+
+    <button class="btn-primary">
+      + Nueva tarea
+    </button>
+
+  </header>
+
+
+  <section class="tareas-list">
+
+    <!-- Encabezado de la lista -->
+    <div class="tareas-columns">
+
+      <span>Tarea</span>
+      <span>Prioridad</span>
+      <span>Entrega</span>
+      <span>Estado</span>
+      <span>Acciones</span>
+
+    </div>
+
+
+    <!-- Tareas -->
+    @for (tarea of tareas(); track tarea.id) {
+
+      <article class="tarea-row">
+
+        <div class="tarea-info">
+
+          <strong>
+            {{ tarea.titulo }}
+          </strong>
+
+          @if (tarea.descripcion) {
+            <p>
+              {{ tarea.descripcion }}
+            </p>
+          }
+
+        </div>
+
+
+        <div class="tarea-prioridad">
+          Prioridad {{ tarea.prioridadId }}
+        </div>
+
+
+        <div class="tarea-fecha">
+
+          @if (tarea.fechaEntrega) {
+            {{ tarea.fechaEntrega }}
+          } @else {
+            <span>Sin fecha</span>
+          }
+
+        </div>
+
+
+        <div class="tarea-estado">
+
+          @if (tarea.estaTerminada) {
+            <span class="estado terminada">
+              Terminada
+            </span>
+          } @else {
+            <span class="estado pendiente">
+              Pendiente
+            </span>
+          }
+
+        </div>
+
+
+        <div class="tarea-actions">
+
+          <button title="Editar">
+            ✏️
+          </button>
+
+          <button title="Subtareas">
+            ☷
+          </button>
+
+          <button title="Eliminar">
+            🗑️
+          </button>
+
+        </div>
+
+      </article>
+
+    }
+
+  </section>
+
+</div>
