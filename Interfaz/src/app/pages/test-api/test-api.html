@@ -1,7 +1,7 @@
 <h1>Prueba API</h1>
 
-@for (usuario of usuarios; track usuario.Id) {
+@for (tarea of tareas(); track tarea.id) {
   <p>
-    {{ usuario.Id }} - {{ usuario.Nombre }}
+    {{ tarea.id }} - {{ tarea.descripcion }}
   </p>
 }

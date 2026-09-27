@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { UsuarioService } from '../../core/services/usuario.service';
-import { Usuario } from '../../models/usuario';
+import { Component, inject, signal } from '@angular/core';
+import { TareaService } from '../../core/services/tarea.service';
+import { Tarea } from '../../models/tarea';
 
 @Component({
   selector: 'app-test-api',
@@ -9,18 +9,18 @@ import { Usuario } from '../../models/usuario';
   styleUrl: './test-api.css',
 })
 export class TestApi {
-  private readonly usuarioService = inject(UsuarioService);
+  private readonly tareaService = inject(TareaService);
 
-  usuarios: Usuario[] = [];
+  tareas = signal<Tarea[]>([]);
 
   ngOnInit(): void {
-    this.usuarioService.obtenerTodos().subscribe({
-      next: usuarios => {
-        console.log('Usuarios recibidos: ', usuarios);
-        this.usuarios = usuarios;
+    this.tareaService.obtenerTodas().subscribe({
+      next: tareas => {
+        console.log('Tarea recibidos: ', tareas);
+        this.tareas.set(tareas);
       }, 
       error: error => {
-        console.log('Error al consultar usuarios:', error);
+        console.log('Error al consultar tareas:', error);
       }
     })
   }
