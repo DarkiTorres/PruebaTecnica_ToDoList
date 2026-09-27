@@ -57,10 +57,12 @@ export class TareaService extends ApiService {
     }
 
 
-    completar(id: number): Observable<void> {
+    completar(id: number, estaTerminada: boolean): Observable<void> {
         return this.http.patch<void>(
             `${this.apiUrl}/tareas/${id}/completar`,
-            {}
+            {
+                estaTerminada
+            }
         );
     }
 }
