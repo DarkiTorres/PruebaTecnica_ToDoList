@@ -22,4 +22,9 @@ type ISubTareaService interface {
 		int64,
 		int,
 	) error
+
+	ObtenerPorTareaId(
+		context context.Context,
+		tareaId int64,
+	) ([]entities.SubTarea, error)
 }

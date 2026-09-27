@@ -24,6 +24,36 @@ func NewSubTareaHandler(
 	}
 }
 
+func (h *SubTareaHandler) ObtenerPorTareaId(c *gin.Context) {
+
+	tareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || tareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la tarea no es válido",
+		})
+		return
+	}
+
+	subTareas, err := h.service.ObtenerPorTareaId(
+		c.Request.Context(),
+		tareaId,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, subTareas)
+}
+
 func (h *SubTareaHandler) Crear(c *gin.Context) {
 
 	tareaId, err := strconv.ParseInt(

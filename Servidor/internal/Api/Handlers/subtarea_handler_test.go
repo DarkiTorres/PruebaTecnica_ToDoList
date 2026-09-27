@@ -28,9 +28,23 @@ type SubTareaServiceMock struct {
 	SubTareaEliminadaId     int64
 	ModificadoPorEliminado  int
 	ErrorEliminarSubTarea   error
+
+	ObtenerPorTareaIdLlamado bool
+	SubTareasPorTarea        []entities.SubTarea
+	ErrorObtenerPorTareaId   error
 }
 
 var _ services.ISubTareaService = (*SubTareaServiceMock)(nil)
+
+func (m *SubTareaServiceMock) ObtenerPorTareaId(
+	context context.Context,
+	tareaId int64,
+) ([]entities.SubTarea, error) {
+
+	m.ObtenerPorTareaIdLlamado = true
+
+	return m.SubTareasPorTarea, m.ErrorObtenerPorTareaId
+}
 
 func (m *SubTareaServiceMock) CrearSubTarea(
 	context context.Context,
@@ -995,5 +1009,48 @@ func TestSubTareaService_EliminarSubTarea_ErrorObtenerPorId_RetornaError(t *test
 		t.Fatal(
 			"Actualizar no debería haberse llamado",
 		)
+	}
+}
+
+func TestObtenerPorTareaId_Exitoso(t *testing.T) {
+
+	mock := &SubTareaServiceMock{
+		SubTareasPorTarea: []entities.SubTarea{
+			{
+				Id:      1,
+				TareaId: 10,
+				Titulo:  "Subtarea de prueba",
+			},
+		},
+	}
+
+	handler := NewSubTareaHandler(mock)
+
+	router := gin.Default()
+
+	router.GET(
+		"/tareas/:id/subtareas",
+		handler.ObtenerPorTareaId,
+	)
+
+	request := httptest.NewRequest(
+		http.MethodGet,
+		"/tareas/10/subtareas",
+		nil,
+	)
+
+	response := httptest.NewRecorder()
+
+	router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf(
+			"Se esperaba status 200, se obtuvo %d",
+			response.Code,
+		)
+	}
+
+	if !mock.ObtenerPorTareaIdLlamado {
+		t.Error("Se esperaba que ObtenerPorTareaId fuera llamado")
 	}
 }
