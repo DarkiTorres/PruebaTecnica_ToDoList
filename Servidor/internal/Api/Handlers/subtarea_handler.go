@@ -97,3 +97,41 @@ func (h *SubTareaHandler) Crear(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, subTarea)
 }
+
+func (h *SubTareaHandler) Completar(c *gin.Context) {
+
+	subTareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || subTareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la subtarea no es válido",
+		})
+		return
+	}
+
+	var request tareas.CompletarTareaRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El cuerpo de la solicitud no es válido",
+		})
+		return
+	}
+
+	if err := h.service.CompletarSubTarea(
+		c.Request.Context(),
+		subTareaId,
+		request.EstaTerminada,
+	); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}

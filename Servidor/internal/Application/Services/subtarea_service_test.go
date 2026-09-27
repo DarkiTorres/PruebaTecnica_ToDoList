@@ -209,6 +209,7 @@ func TestCompletarSubTarea_IdInvalido_NoCompleta(t *testing.T) {
 	err := service.CompletarSubTarea(
 		context.Background(),
 		0,
+		true,
 	)
 
 	if err == nil {
@@ -238,6 +239,7 @@ func TestCompletarSubTarea_ErrorAlObtener_RegresaError(t *testing.T) {
 	err := service.CompletarSubTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if !errors.Is(err, errorEsperado) {
@@ -275,6 +277,7 @@ func TestCompletarSubTarea_SubTareaEliminada_NoCompleta(t *testing.T) {
 	err := service.CompletarSubTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err == nil {
@@ -312,6 +315,7 @@ func TestCompletarSubTarea_SubTareaValida_CompletaSubTarea(t *testing.T) {
 	err := service.CompletarSubTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err != nil {
@@ -355,6 +359,7 @@ func TestCompletarSubTarea_ErrorAlActualizar_RegresaError(t *testing.T) {
 	err := service.CompletarSubTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if !errors.Is(err, errorEsperado) {

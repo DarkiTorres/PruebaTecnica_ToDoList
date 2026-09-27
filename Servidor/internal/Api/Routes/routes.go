@@ -44,6 +44,7 @@ func ConfigurarRutas(
 
 	router.GET("/usuarios", usuarioHandler.ObtenerTodos)
 	router.GET("/usuarios/:id", usuarioHandler.ObtenerPorId)
+	router.PATCH("/subtareas/:id/completar", subtareaHandler.Completar)
 
 	router.GET("/prioridades", prioridadHandler.ObtenerTodos)
 }

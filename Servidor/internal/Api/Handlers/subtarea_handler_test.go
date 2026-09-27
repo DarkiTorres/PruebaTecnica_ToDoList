@@ -32,10 +32,27 @@ type SubTareaServiceMock struct {
 	ObtenerPorTareaIdLlamado bool
 	SubTareasPorTarea        []entities.SubTarea
 	ErrorObtenerPorTareaId   error
+
+	CompletarSubTareaLlamado bool
+	SubTareaCompletadaId     int64
+	EstadoSubTarea           bool
+	ErrorCompletarSubTarea   error
 }
 
 var _ services.ISubTareaService = (*SubTareaServiceMock)(nil)
 
+func (m *SubTareaServiceMock) CompletarSubTarea(
+	context context.Context,
+	subTareaId int64,
+	estaTerminada bool,
+) error {
+
+	m.CompletarSubTareaLlamado = true
+	m.SubTareaCompletadaId = subTareaId
+	m.EstadoSubTarea = estaTerminada
+
+	return m.ErrorCompletarSubTarea
+}
 func (m *SubTareaServiceMock) ObtenerPorTareaId(
 	context context.Context,
 	tareaId int64,

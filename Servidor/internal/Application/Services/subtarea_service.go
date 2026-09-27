@@ -134,7 +134,7 @@ func (s *SubTareaService) EliminarSubTarea(context context.Context, subTareaId i
 	)
 }
 
-func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId int64) error {
+func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId int64, estaTerminada bool) error {
 	if subTareaId <= 0 {
 		return errors.New("el id de la subtarea no es válido")
 	}
@@ -157,7 +157,7 @@ func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId 
 		)
 	}
 
-	subTarea.EstaTerminada = true
+	subTarea.EstaTerminada = estaTerminada
 
 	return s.subTareaRepository.Actualizar(
 		context,

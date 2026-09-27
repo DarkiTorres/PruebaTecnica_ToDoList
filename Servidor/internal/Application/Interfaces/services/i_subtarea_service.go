@@ -27,4 +27,10 @@ type ISubTareaService interface {
 		context context.Context,
 		tareaId int64,
 	) ([]entities.SubTarea, error)
+
+	CompletarSubTarea(
+		context.Context,
+		int64,
+		bool,
+	) error
 }
