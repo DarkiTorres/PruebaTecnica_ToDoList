@@ -36,6 +36,7 @@ func TestCompletarTarea_SinSubTareas_CompletaTarea(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err != nil {
@@ -88,6 +89,7 @@ func TestCompletarTarea_ConSubTareaPendiente_NoCompleta(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err == nil {
@@ -140,6 +142,7 @@ func TestCompletarTarea_ConTodasLasSubTareasTerminadas_CompletaTarea(t *testing.
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err != nil {
@@ -184,6 +187,7 @@ func TestCompletarTarea_ConSubTareaEliminada_NoBloquea(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err != nil {
@@ -218,6 +222,7 @@ func TestCompletarTarea_ErrorAlObtenerTarea_RegresaError(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if !errors.Is(err, errorEsperado) {
@@ -1295,6 +1300,7 @@ func TestCompletarTarea_ErrorAlObtenerSubTareas_RegresaError(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if !errors.Is(err, errorEsperado) {
@@ -1341,6 +1347,7 @@ func TestCompletarTarea_ErrorAlActualizar_RegresaError(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if !errors.Is(err, errorEsperado) {
@@ -1378,6 +1385,7 @@ func TestCompletarTarea_TareaInexistente_RegresaError(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		1,
+		true,
 	)
 
 	if err == nil {
@@ -1404,6 +1412,7 @@ func TestCompletarTarea_IdInvalido_RegresaError(t *testing.T) {
 	err := service.CompletarTarea(
 		context.Background(),
 		0,
+		false,
 	)
 
 	if err == nil {

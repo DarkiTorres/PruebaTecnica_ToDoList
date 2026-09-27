@@ -349,9 +349,19 @@ func (h *TareaHandler) Completar(c *gin.Context) {
 		return
 	}
 
+	var request tareas.CompletarTareaRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El cuerpo de la solicitud no es válido",
+		})
+		return
+	}
+
 	if err := h.service.CompletarTarea(
 		c.Request.Context(),
 		tareaId,
+		request.EstaTerminada,
 	); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

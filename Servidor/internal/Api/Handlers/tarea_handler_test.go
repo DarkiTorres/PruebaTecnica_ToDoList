@@ -60,6 +60,7 @@ var _ repositories.ISubTareaRepository = (*SubTareaRepositoryMock)(nil)
 func (m *TareaServiceMock) CompletarTarea(
 	context context.Context,
 	tareaId int64,
+	estaTerminada bool,
 ) error {
 	m.CompletarTareaLlamado = true
 	m.TareaCompletadaId = tareaId

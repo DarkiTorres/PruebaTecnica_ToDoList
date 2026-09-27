@@ -102,7 +102,7 @@ func (s *TareaService) CrearTarea(
 	)
 }
 
-func (s *TareaService) CompletarTarea(context context.Context, tareaId int64) error {
+func (s *TareaService) CompletarTarea(context context.Context, tareaId int64, estaTerminada bool) error {
 
 	if tareaId <= 0 {
 		return errors.New("el id de la tarea no es válido")
@@ -132,7 +132,7 @@ func (s *TareaService) CompletarTarea(context context.Context, tareaId int64) er
 		}
 	}
 
-	tarea.EstaTerminada = true
+	tarea.EstaTerminada = estaTerminada
 
 	return s.tareaRepository.Actualizar(
 		context, tarea,
