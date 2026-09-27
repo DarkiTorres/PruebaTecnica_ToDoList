@@ -86,7 +86,6 @@ func (h *TareaHandler) Crear(c *gin.Context) {
 }
 
 func (h *TareaHandler) ObtenerTodas(c *gin.Context) {
-
 	tareasObtenidas, err := h.service.ObtenerTareas(
 		c.Request.Context(),
 	)
@@ -106,9 +105,9 @@ func (h *TareaHandler) ObtenerTodas(c *gin.Context) {
 
 	for _, tarea := range tareasObtenidas {
 
-		subTareas, err := h.subTareaRepository.ObtenerPorTareaId(
-			c.Request.Context(),
-			tarea.Id,
+		response, err := h.construirTareaResponse(
+			c,
+			tarea,
 		)
 
 		if err != nil {
@@ -118,60 +117,20 @@ func (h *TareaHandler) ObtenerTodas(c *gin.Context) {
 			return
 		}
 
-		subTareasResponse := make(
-			[]tareas.SubTareaResponse,
-			0,
-			len(subTareas),
-		)
-
-		for _, subTarea := range subTareas {
-
-			subTareasResponse = append(
-				subTareasResponse,
-				tareas.SubTareaResponse{
-					Id:            subTarea.Id,
-					TareaId:       subTarea.TareaId,
-					Titulo:        subTarea.Titulo,
-					EstaTerminada: subTarea.EstaTerminada,
-					EstaEliminada: subTarea.EstaEliminada,
-					CreadoEl:      subTarea.CreadoEl,
-					CreadoPor:     subTarea.CreadoPor,
-					ModificadoEl:  subTarea.ModificadoEl,
-					ModificadoPor: subTarea.ModificadoPor,
-				},
-			)
-		}
-
-		respuestas = append(
-			respuestas,
-			tareas.TareaResponse{
-				Id:            tarea.Id,
-				Titulo:        tarea.Titulo,
-				Descripcion:   tarea.Descripcion,
-				PrioridadId:   tarea.PrioridadId,
-				FechaEntrega:  tarea.FechaEntrega,
-				EstaTerminada: tarea.EstaTerminada,
-				EstaEliminada: tarea.EstaEliminada,
-				CreadoEl:      tarea.CreadoEl,
-				CreadoPor:     tarea.CreadoPor,
-				ModificadoEl:  tarea.ModificadoEl,
-				ModificadoPor: tarea.ModificadoPor,
-				SubTareas:     subTareasResponse,
-			},
-		)
+		respuestas = append(respuestas, response)
 	}
 
 	c.JSON(http.StatusOK, respuestas)
-
 }
 
 func (h *TareaHandler) ObtenerPorId(c *gin.Context) {
+	id, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
 
-	idParam := c.Param("id")
-
-	tareaId, err := strconv.ParseInt(idParam, 10, 64)
-
-	if err != nil || tareaId <= 0 {
+	if err != nil || id <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "El id de la tarea no es válido",
 		})
@@ -180,7 +139,7 @@ func (h *TareaHandler) ObtenerPorId(c *gin.Context) {
 
 	tarea, err := h.service.ObtenerTareaPorId(
 		c.Request.Context(),
-		tareaId,
+		id,
 	)
 
 	if err != nil {
@@ -190,9 +149,9 @@ func (h *TareaHandler) ObtenerPorId(c *gin.Context) {
 		return
 	}
 
-	subTareas, err := h.subTareaRepository.ObtenerPorTareaId(
-		c.Request.Context(),
-		tarea.Id,
+	response, err := h.construirTareaResponse(
+		c,
+		*tarea,
 	)
 
 	if err != nil {
@@ -200,45 +159,6 @@ func (h *TareaHandler) ObtenerPorId(c *gin.Context) {
 			"error": err.Error(),
 		})
 		return
-	}
-
-	subTareasResponse := make(
-		[]tareas.SubTareaResponse,
-		0,
-		len(subTareas),
-	)
-
-	for _, subTarea := range subTareas {
-
-		subTareasResponse = append(
-			subTareasResponse,
-			tareas.SubTareaResponse{
-				Id:            subTarea.Id,
-				TareaId:       subTarea.TareaId,
-				Titulo:        subTarea.Titulo,
-				EstaTerminada: subTarea.EstaTerminada,
-				EstaEliminada: subTarea.EstaEliminada,
-				CreadoEl:      subTarea.CreadoEl,
-				CreadoPor:     subTarea.CreadoPor,
-				ModificadoEl:  subTarea.ModificadoEl,
-				ModificadoPor: subTarea.ModificadoPor,
-			},
-		)
-	}
-
-	response := tareas.TareaResponse{
-		Id:            tarea.Id,
-		Titulo:        tarea.Titulo,
-		Descripcion:   tarea.Descripcion,
-		PrioridadId:   tarea.PrioridadId,
-		FechaEntrega:  tarea.FechaEntrega,
-		EstaTerminada: tarea.EstaTerminada,
-		EstaEliminada: tarea.EstaEliminada,
-		CreadoEl:      tarea.CreadoEl,
-		CreadoPor:     tarea.CreadoPor,
-		ModificadoEl:  tarea.ModificadoEl,
-		ModificadoPor: tarea.ModificadoPor,
-		SubTareas:     subTareasResponse,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -444,9 +364,8 @@ func (h *TareaHandler) Completar(c *gin.Context) {
 	println("RECORDED STATUS:", c.Writer.Status())
 }
 func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
-
 	usuarioId, err := strconv.Atoi(
-		c.Param("usuarioId"),
+		c.Param("id"),
 	)
 
 	if err != nil || usuarioId <= 0 {
@@ -468,5 +387,83 @@ func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tareasObtenidas)
+	respuestas := make(
+		[]tareas.TareaResponse,
+		0,
+		len(tareasObtenidas),
+	)
+
+	for _, tarea := range tareasObtenidas {
+
+		response, err := h.construirTareaResponse(
+			c,
+			tarea,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		respuestas = append(respuestas, response)
+	}
+
+	c.JSON(http.StatusOK, respuestas)
+
+}
+
+func (h *TareaHandler) construirTareaResponse(
+	c *gin.Context,
+	tarea entities.Tarea,
+) (tareas.TareaResponse, error) {
+
+	subTareas, err := h.subTareaRepository.ObtenerPorTareaId(
+		c.Request.Context(),
+		tarea.Id,
+	)
+
+	if err != nil {
+		return tareas.TareaResponse{}, err
+	}
+
+	subTareasResponse := make(
+		[]tareas.SubTareaResponse,
+		0,
+		len(subTareas),
+	)
+
+	for _, subTarea := range subTareas {
+
+		subTareasResponse = append(
+			subTareasResponse,
+			tareas.SubTareaResponse{
+				Id:            subTarea.Id,
+				TareaId:       subTarea.TareaId,
+				Titulo:        subTarea.Titulo,
+				EstaTerminada: subTarea.EstaTerminada,
+				EstaEliminada: subTarea.EstaEliminada,
+				CreadoEl:      subTarea.CreadoEl,
+				CreadoPor:     subTarea.CreadoPor,
+				ModificadoEl:  subTarea.ModificadoEl,
+				ModificadoPor: subTarea.ModificadoPor,
+			},
+		)
+	}
+
+	return tareas.TareaResponse{
+		Id:            tarea.Id,
+		Titulo:        tarea.Titulo,
+		Descripcion:   tarea.Descripcion,
+		PrioridadId:   tarea.PrioridadId,
+		FechaEntrega:  tarea.FechaEntrega,
+		EstaTerminada: tarea.EstaTerminada,
+		EstaEliminada: tarea.EstaEliminada,
+		CreadoEl:      tarea.CreadoEl,
+		CreadoPor:     tarea.CreadoPor,
+		ModificadoEl:  tarea.ModificadoEl,
+		ModificadoPor: tarea.ModificadoPor,
+		SubTareas:     subTareasResponse,
+	}, nil
 }
