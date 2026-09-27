@@ -82,7 +82,15 @@ func (h *TareaHandler) Crear(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, tarea)
+	response, err := h.construirTareaResponse(c, *tarea)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, response)
 }
 
 func (h *TareaHandler) ObtenerTodas(c *gin.Context) {
