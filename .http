@@ -1,1 +1,1 @@
-GET http://localhost:8080/usuarios/2/tareas
+http://localhost:8080/tareas/1/subtareas
