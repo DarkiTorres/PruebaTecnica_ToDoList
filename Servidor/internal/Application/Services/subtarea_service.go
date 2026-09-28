@@ -48,10 +48,26 @@ func (s *SubTareaService) CrearSubTarea(context context.Context, subTarea *entit
 		)
 	}
 
-	return s.subTareaRepository.Crear(
+	if err := s.subTareaRepository.Crear(
 		context,
 		subTarea,
-	)
+	); err != nil {
+		return err
+	}
+
+	if tarea.EstaTerminada {
+
+		tarea.EstaTerminada = false
+
+		if err := s.tareaRepository.Actualizar(
+			context,
+			tarea,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *SubTareaService) ObtenerPorTareaId(context context.Context, tareaId int64) ([]entities.SubTarea, error) {

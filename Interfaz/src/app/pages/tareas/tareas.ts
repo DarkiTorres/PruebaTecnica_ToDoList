@@ -286,6 +286,36 @@ export class Tareas {
 
   }
 
+  marcarTareaPendiente(): void {
+    const tarea = this.tareaSeleccionada();
+
+    if (!tarea) {
+      return;
+    }
+
+    this.tareas.update(
+      tareas =>
+        tareas.map(t =>
+          t.id === tarea.id
+            ? {
+                ...t,
+                estaTerminada: false
+              }
+            : t
+        )
+    );
+
+    this.tareaSeleccionada.update(
+      tareaActual =>
+        tareaActual
+          ? {
+              ...tareaActual,
+              estaTerminada: false
+            }
+          : tareaActual
+    );
+  }
+
   private cargarTareas(usuarioId: number, rolId: number): void {
     if (rolId === 1) {
       console.log('Líder → GET /tareas');

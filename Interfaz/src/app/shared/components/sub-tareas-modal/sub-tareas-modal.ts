@@ -20,6 +20,7 @@ export class SubTareasModal {
   @Input() subtareas: SubTarea[] | null = [];
   @Input() usuarioActual: Usuario | null = null;
 
+  @Output() tareaModificada = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
 
   mostrarNuevaSubTarea = signal(false);
@@ -62,6 +63,8 @@ export class SubTareasModal {
           ...(this.subtareas ?? []),
           subtarea
         ];
+
+        this.tareaModificada.emit();
 
         this.mostrarNuevaSubTarea.set(false);
         this.tituloNuevaSubTarea = '';
