@@ -21,6 +21,14 @@ func NewTareaRepository(db *pgxpool.Pool) *TareaRepositoryPostgres {
 }
 
 func (r *TareaRepositoryPostgres) Crear(context context.Context, tarea *entities.Tarea) error {
+	if tarea.PrioridadId == 2 || tarea.PrioridadId == 3 {
+		str := len(*tarea.Descripcion)
+		if str <= 50 {
+			return nil
+		}
+
+	}
+
 	query := `
 		INSERT INTO Tareas (
 			Titulo,

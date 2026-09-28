@@ -18,6 +18,7 @@ export class NuevaTareaModal {
   @Input() tareaEditar: Tarea | null = null;
   @Input() modoEdicion = false;
 
+
   @Output() cerrar = new EventEmitter<void>();
   @Output() crear = new EventEmitter<CrearTareaForm>();
 
@@ -26,8 +27,13 @@ export class NuevaTareaModal {
   prioridadId: number | null = null;
   asignadoA: number | null = null;
   fechaEntrega = '';
+  fechaMinima = '';
+
+
 
   ngOnChanges(): void {
+
+    this.getDateNow();
 
     if (this.modoEdicion && this.tareaEditar) {
 
@@ -69,6 +75,13 @@ export class NuevaTareaModal {
       asignadoA: this.asignadoA
     });
 
+  }
+
+  getDateNow(): string {
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+    this.fechaMinima = hoy.toISOString().slice(0,16);
+    return this.fechaMinima;
   }
 
   cerrarModal(): void {

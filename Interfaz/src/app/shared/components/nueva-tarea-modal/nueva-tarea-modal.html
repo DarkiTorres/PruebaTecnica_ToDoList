@@ -105,6 +105,7 @@
           id="fechaEntrega"
           type="datetime-local"
           [(ngModel)]="fechaEntrega"
+          [min]="getDateNow()"
         >
       </div>
 
