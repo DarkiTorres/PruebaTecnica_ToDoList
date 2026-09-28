@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { SubTarea } from '../../models/subtarea';
 import { ApiService } from './api.service';
 
+import { CrearSubTareaRequest } from '../../models/crear_sub_tarea_request';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,10 +22,10 @@ export class SubTareaService extends ApiService {
         );
     }
 
-    crear(tareaId: number, subTarea: SubTarea): Observable<SubTarea> {
+    crear(request: CrearSubTareaRequest): Observable<SubTarea> {
         return this.http.post<SubTarea>(
-            `${this.apiUrl}/tareas/${tareaId}/subtareas`,
-            subTarea
+            `${this.apiUrl}/tareas/${request.tareaId}/subtareas`,
+            request
         );
     }
 

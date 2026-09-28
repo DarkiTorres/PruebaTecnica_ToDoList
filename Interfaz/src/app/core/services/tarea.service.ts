@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
 import { Tarea } from '../../models/tarea';
 import { ApiService } from './api.service';
+import { ActualizarTareaRequest } from '../../models/actualizar_tarea_request';
 
 @Injectable({
   providedIn: 'root'
@@ -27,15 +27,15 @@ export class TareaService extends ApiService {
         );
     }
 
-    crear(tarea: Tarea): Observable<Tarea> {
+    crear(tarea: CrearTareaRequest): Observable<Tarea> {
         return this.http.post<Tarea>(
             `${this.apiUrl}/tareas`,
             tarea
         );
     }
 
-    actualizar(id: number, tarea: Tarea): Observable<void> {
-        return this.http.put<void>(
+    actualizar(id: number, tarea: ActualizarTareaRequest): Observable<Tarea> {
+        return this.http.put<Tarea>(
             `${this.apiUrl}/tareas/${id}`,
             tarea
         );
