@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	handlers "to-do-server/internal/Api/Handlers"
 	routes "to-do-server/internal/Api/Routes"
 	services "to-do-server/internal/Application/Services"
-	initialization "to-do-server/internal/Infrastructure/Database/Initialization"
+	database "to-do-server/internal/Infrastructure/Database"
+	initialization "to-do-server/internal/Infrastructure/Database/initialization"
 	postgres "to-do-server/internal/Infrastructure/Database/postgres"
 	"to-do-server/internal/Infrastructure/config"
 
@@ -17,26 +19,54 @@ import (
 
 func main() {
 
+	log.Println("[STARTUP] Iniciando servidor...")
+
 	cfg, err := config.Load()
+
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[STARTUP] Error cargando configuración: %v", err)
 	}
 
 	db, err := postgres.Connect(
 		cfg.GenerateConnectionString(),
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[STARTUP] Error creando conexión con PostgreSQL: %v", err)
 	}
+
 	defer db.Close()
+	log.Println("[STARTUP] Pool PostgreSQL creado.")
 
 	ctx := context.Background()
 
 	initializer := initialization.NewDatabaseInitializer(db)
 
 	if err := initializer.Initialize(ctx); err != nil {
-		log.Fatal(err)
+		log.Fatalf(
+			"[STARTUP] Error inicializando la base de datos: %v",
+			err,
+		)
 	}
+
+	log.Println("[STARTUP] Inicialización de base de datos completada.")
+
+	validationCtx, cancel := context.WithTimeout(
+		context.Background(),
+		5*time.Second,
+	)
+	defer cancel()
+
+	if err := database.ValidarBaseDeDatos(
+		validationCtx,
+		db,
+	); err != nil {
+		log.Fatalf(
+			"[STARTUP] Validación de base de datos fallida: %v",
+			err,
+		)
+	}
+
+	log.Println("[STARTUP] Base de datos validada correctamente.")
 
 	// =========================
 	// REPOSITORIES
@@ -128,7 +158,15 @@ func main() {
 	// SERVER
 	// =========================
 
+	log.Printf(
+		"[STARTUP] Servidor escuchando en :%s",
+		cfg.AppPort,
+	)
+
 	if err := router.Run(":" + cfg.AppPort); err != nil {
-		log.Fatal(err)
+		log.Fatalf(
+			"[STARTUP] Error iniciando servidor HTTP: %v",
+			err,
+		)
 	}
 }

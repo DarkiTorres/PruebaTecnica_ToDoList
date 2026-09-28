@@ -19,6 +19,7 @@ export class SubTareasModal {
   @Input() tarea: Tarea | null = null;
   @Input() subtareas: SubTarea[] | null = [];
   @Input() usuarioActual: Usuario | null = null;
+  @Input() soloLectura = false;
 
   @Output() tareaModificada = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();

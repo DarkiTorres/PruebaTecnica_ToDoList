@@ -40,6 +40,7 @@
                 <input
                     type="checkbox"
                     [checked]="subtarea.estaTerminada"
+                    [disabled]="soloLectura"
                     (change)="cambiarEstadoSubTarea(subtarea, $event)"
                 >
                 
@@ -62,7 +63,12 @@
 
     <div class="modal-footer">
 
-      <button type="button" class="btn-nueva" (click)="abrirNuevaSubTarea()">
+      <button 
+      type="button" 
+      class="btn-nueva" 
+      [disabled]="soloLectura"
+      (click)="abrirNuevaSubTarea()"
+      >
         + Nueva subtarea
       </button>
 

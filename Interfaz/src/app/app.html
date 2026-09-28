@@ -3,3 +3,17 @@
 <main>
     <router-outlet />
 </main>
+
+@if (!conexion.conectada()) {
+
+  <div class="conexion-notificacion">
+
+    <span class="spinner"></span>
+
+    <span>
+      Reiniciando conexión...
+    </span>
+
+  </div>
+
+}
