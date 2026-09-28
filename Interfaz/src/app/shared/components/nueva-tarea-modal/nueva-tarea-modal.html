@@ -1,0 +1,135 @@
+<div class="modal-overlay">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <div>
+        <h2>{{ modoEdicion ? 'Editar tarea' : 'Nueva tarea' }}</h2>
+        <p>
+            {{ modoEdicion ? 'Modifica los datos de la tarea' : 'Crea una nueva tarea'}}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-cerrar"
+        (click)="cerrarModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="campo">
+        <label for="titulo">
+          Título
+        </label>
+
+        <input
+          id="titulo"
+          type="text"
+          [(ngModel)]="titulo"
+          maxlength="200"
+          placeholder="Título de la tarea"
+        >
+
+        <small>
+            {{ titulo.length }}/200
+        </small>
+      </div>
+
+      <div class="campo">
+        <label for="descripcion">
+          Descripción
+        </label>
+
+        <textarea
+          id="descripcion"
+          [(ngModel)]="descripcion"
+          maxlength="500"
+          placeholder="Descripción de la tarea"
+        ></textarea>
+
+        <small>
+            {{ descripcion.length }}/500
+        </small>
+      </div>
+
+      <div class="campo">
+        <label for="prioridad">
+          Prioridad
+        </label>
+
+        <select
+          id="prioridad"
+          [(ngModel)]="prioridadId"
+        >
+          <option [ngValue]="null">
+            Selecciona una prioridad
+          </option>
+
+          @for (prioridad of prioridades; track prioridad.Id) {
+            <option [ngValue]="prioridad.Id">
+                {{ prioridad.Descripcion }}
+            </option>
+        }       
+        </select>
+      </div>
+      
+      @if (usuarioActual?.RolId === 1) {
+        <div class="campo">
+            <label for="asignadoA"> Asignar a </label>
+            <select id="asignadoA" [(ngModel)]="asignadoA">
+                <option [ngValue]="null"> Selecciona un usuario </option>
+                @for (usuario of usuarios; track usuario.Id) {
+                    @if (usuarioActual?.RolId === 1 || usuario.Id === usuarioActual?.Id) 
+                    {
+                        <option [ngValue]="usuario.Id">
+                            {{ usuario.Nombre }}
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+      }
+
+      <div class="campo">
+        <label for="fechaEntrega">
+          Fecha de entrega
+        </label>
+
+        <input
+          id="fechaEntrega"
+          type="datetime-local"
+          [(ngModel)]="fechaEntrega"
+        >
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="btn-cancelar"
+        (click)="cerrarModal()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="btn-guardar"
+        (click)="crearTarea()"
+      >
+        {{ modoEdicion ? 'Guardar cambios' : 'Crear tarea' }}
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
