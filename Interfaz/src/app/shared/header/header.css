@@ -1,0 +1,71 @@
+.header {
+  height: 64px;
+  padding: 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.usuario {
+  position: relative;
+}
+
+.usuario-button {
+  border: none;
+  background: transparent;
+
+  padding: 10px 14px;
+  border-radius: 8px;
+
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.usuario-button:hover {
+  background: #f3f3f3;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 48px;
+
+  min-width: 200px;
+
+  background: white;
+  border-radius: 10px;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+  padding: 8px;
+
+  z-index: 100;
+}
+
+.opcion-usuario {
+  display: block;
+  width: 100%;
+
+  border: none;
+  background: transparent;
+
+  padding: 10px;
+  text-align: left;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.opcion-usuario:hover {
+  background: #f3f3f3;
+}

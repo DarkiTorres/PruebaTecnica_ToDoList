@@ -1,0 +1,522 @@
+.tareas-page {
+  width: 100%;
+  padding: 32px 40px;
+  box-sizing: border-box;
+}
+
+.prioridad {
+  display: inline-flex;
+  width: fit-content;
+
+  padding: 5px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.prioridad.urgente {
+  background-color: #eee0ff;
+  color: #7c3aed;
+}
+
+.prioridad.alta {
+  background-color: #ffe1e1;
+  color: #dc2626;
+}
+
+.prioridad.media {
+  background-color: #fff4cc;
+  color: #b77900;
+}
+
+.prioridad.baja {
+  background-color: #dcf5e7;
+  color: #16834b;
+}
+
+.prioridad.otro {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.tareas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 30px;
+}
+
+.tareas-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.tareas-header p {
+  margin: 6px 0 0;
+
+  color: #777;
+  font-size: 14px;
+}
+
+
+/* =========================
+   BOTÓN PRINCIPAL
+   ========================= */
+
+.btn-primary {
+  border: none;
+  border-radius: 8px;
+
+  padding: 11px 18px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+
+/* =========================
+   LISTA
+   ========================= */
+
+.tareas-list {
+  width: 100%;
+}
+
+.tareas-columns {
+  display: grid;
+
+  grid-template-columns:
+    minmax(250px, 2fr)
+    130px
+    130px
+    120px
+    150px;
+
+  align-items: center;
+
+  padding: 0 12px 12px;
+
+  color: #777;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tareas-columns.con-asignado {
+  grid-template-columns:
+    minmax(250px, 2fr)
+    150px
+    130px
+    130px
+    120px
+    150px;
+}
+
+
+.tarea-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(250px, 2fr)
+    130px
+    130px
+    120px
+    150px;
+
+  align-items: center;
+
+  min-height: 72px;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  transition: background-color 0.15s ease;
+}
+
+.tarea-row.con-asignado {
+  grid-template-columns:
+    minmax(250px, 2fr)
+    150px
+    130px
+    130px
+    120px
+    150px;
+}
+
+.tarea-row:hover {
+  background-color: #f7f7f7;
+}
+
+
+/* =========================
+   INFORMACIÓN
+   ========================= */
+
+.tarea-info {
+  min-width: 0;
+}
+
+.tarea-info strong {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tarea-info p {
+  margin: 5px 0 0;
+
+  color: #777;
+
+  font-size: 13px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   PRIORIDAD / FECHA
+   ========================= */
+
+.tarea-prioridad,
+.tarea-fecha {
+  font-size: 14px;
+}
+
+.tarea-fecha {
+  color: #666;
+}
+
+
+/* =========================
+   ESTADO
+   ========================= */
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  width: fit-content;
+
+  padding: 5px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.estado::before {
+  content: '';
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+}
+
+.estado.pendiente {
+  background-color: #fff4cc;
+  color: #9a6700;
+}
+
+.estado.pendiente::before {
+  background-color: #d99a00;
+}
+
+.estado.terminada {
+  background-color: #dcf5e7;
+  color: #16834b;
+}
+
+.estado.terminada::before {
+  background-color: #16834b;
+}
+
+
+/* =========================
+   ACCIONES
+   ========================= */
+
+.tarea-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tarea-actions button {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.tarea-actions button:hover {
+  background-color: #eeeeee;
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .tareas-page {
+    padding: 28px 24px;
+  }
+
+  /* =========================
+     COLABORADOR
+     ========================= */
+
+  .tareas-columns:not(.con-asignado),
+  .tarea-row:not(.con-asignado) {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      110px
+      100px
+      120px;
+  }
+
+
+  /* =========================
+     LÍDER
+     ========================= */
+
+  .tareas-columns.con-asignado,
+  .tarea-row.con-asignado {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      120px
+      110px
+      100px
+      120px;
+  }
+
+
+  /* =========================
+     OCULTAR ENTREGA
+     ========================= */
+
+  .tarea-fecha,
+  .columna-entrega {
+    display: none;
+  }
+
+}
+
+/* =========================
+   MÓVIL
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .tareas-page {
+    padding: 20px 16px;
+  }
+
+  .tareas-header {
+    align-items: flex-start;
+  }
+
+  .tareas-header h1 {
+    font-size: 24px;
+  }
+
+  .tareas-header p {
+    font-size: 13px;
+  }
+
+  .btn-primary {
+    padding: 9px 13px;
+    font-size: 13px;
+  }
+
+
+  /* Quitamos encabezados de tabla */
+
+  .tareas-columns {
+    display: none;
+  }
+
+
+  /* Convertimos cada fila en tarjeta */
+
+  .tarea-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 2fr)
+        130px
+        130px
+        120px
+        150px;
+
+    align-items: center;
+
+    min-height: 72px;
+
+    padding: 12px;
+
+    box-sizing: border-box;
+
+    transition: background-color 0.15s ease;
+    }
+
+    .tarea-row.con-asignado {
+    grid-template-columns:
+        minmax(250px, 2fr)
+        150px
+        130px
+        130px
+        120px
+        150px;
+    }
+
+
+  .tarea-info strong {
+    font-size: 15px;
+  }
+
+  .tarea-info p {
+    margin-top: 7px;
+
+    white-space: normal;
+
+    line-height: 1.4;
+  }
+
+
+  .tarea-prioridad,
+  .tarea-fecha,
+  .tarea-estado {
+    display: inline-block;
+
+    margin-top: 14px;
+    margin-right: 12px;
+  }
+
+
+  .tarea-actions {
+    margin-top: 16px;
+  }
+
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 24px;
+  padding: 16px 0;
+}
+
+.paginacion button {
+  min-width: 34px;
+  height: 34px;
+
+  padding: 0 10px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+.paginacion button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.paginacion button.activa {
+  background-color: #eeeeee;
+  font-weight: 600;
+}
+
+.paginacion button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.switch {
+  position: relative;
+
+  display: inline-block;
+
+  width: 38px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+
+  inset: 0;
+
+  cursor: pointer;
+
+  background-color: #d1d5db;
+
+  border-radius: 999px;
+
+  transition: 0.2s;
+}
+
+.slider::before {
+  content: '';
+
+  position: absolute;
+
+  width: 16px;
+  height: 16px;
+
+  left: 3px;
+  top: 3px;
+
+  background-color: white;
+
+  border-radius: 50%;
+
+  transition: 0.2s;
+}
+
+.switch input:checked + .slider {
+  background-color: #16834b;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(16px);
+}

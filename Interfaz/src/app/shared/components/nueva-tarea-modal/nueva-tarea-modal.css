@@ -1,0 +1,142 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+.modal {
+  width: min(500px, calc(100% - 40px));
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.modal-header p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.btn-cerrar {
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.btn-cerrar:hover {
+  color: #111827;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.campo:last-child {
+  margin-bottom: 0;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.campo input,
+.campo textarea,
+.campo select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 14px;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  border-color: #16834b;
+  box-shadow: 0 0 0 2px rgba(22, 131, 75, 0.1);
+}
+
+.campo textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-cancelar,
+.btn-guardar {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cancelar {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-cancelar:hover {
+  background: #e5e7eb;
+}
+
+.btn-guardar {
+  background: #16834b;
+  color: white;
+}
+
+.btn-guardar:hover {
+  opacity: 0.9;
+}
+
+.campo small {
+  align-self: flex-end;
+  font-size: 12px;
+  color: #9ca3af;
+}

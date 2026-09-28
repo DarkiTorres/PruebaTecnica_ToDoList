@@ -1,0 +1,31 @@
+<header class="header">
+    <div class="logo">
+        ToDo List
+    </div>
+
+    <div class="usuario">
+        <button 
+            class="usuario-button"
+            (click)="cambiarMenu()"
+        >
+            @if (usuarioActual()) {
+                {{ usuarioActual()!.Nombre }}
+            }
+
+            <span>▼</span>
+        </button>
+
+        @if (menuAbierto) {
+            <div class="menu">
+                @for (usuario of usuarios; track usuario.Id) {
+                    <button 
+                        class="opcion-usuario"
+                        (click)="seleccionarUsuario(usuario)"
+                    >
+                        {{usuario.Nombre}}
+                    </button>
+                }
+            </div>
+        }
+    </div>
+</header>

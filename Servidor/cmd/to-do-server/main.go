@@ -76,6 +76,8 @@ func main() {
 		tareaUsuarioRepository,
 	)
 
+	tareaUsuarioService := services.NewTareaUsuarioService(tareaUsuarioRepository)
+
 	// =========================
 	// HANDLERS
 	// =========================
@@ -96,6 +98,8 @@ func main() {
 		tareaService,
 		subTareaService,
 		subTareaRepository,
+		tareaUsuarioService,
+		usuarioService,
 	)
 
 	// =========================

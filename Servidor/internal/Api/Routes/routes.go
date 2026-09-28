@@ -35,13 +35,16 @@ func ConfigurarRutas(
 	router.GET("/tareas", tareaHandler.ObtenerTodas)
 	router.GET("/tareas/:id", tareaHandler.ObtenerPorId)
 	router.PUT("/tareas/:id", tareaHandler.Actualizar)
-	router.POST("/tareas/:id/subtareas", subtareaHandler.Crear)
 	router.PATCH("/tareas/:id/eliminar", tareaHandler.Eliminar)
 	router.PATCH("/tareas/:id/completar", tareaHandler.Completar)
 	router.GET("/usuarios/:id/tareas", tareaHandler.ObtenerPorUsuario)
 
+	router.POST("/tareas/:id/subtareas", subtareaHandler.Crear)
+	router.GET("/tareas/:id/subtareas", subtareaHandler.ObtenerPorTareaId)
+
 	router.GET("/usuarios", usuarioHandler.ObtenerTodos)
 	router.GET("/usuarios/:id", usuarioHandler.ObtenerPorId)
+	router.PATCH("/subtareas/:id/completar", subtareaHandler.Completar)
 
 	router.GET("/prioridades", prioridadHandler.ObtenerTodos)
 }

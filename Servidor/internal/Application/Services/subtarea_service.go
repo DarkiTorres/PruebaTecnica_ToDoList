@@ -54,6 +54,10 @@ func (s *SubTareaService) CrearSubTarea(context context.Context, subTarea *entit
 	)
 }
 
+func (s *SubTareaService) ObtenerPorTareaId(context context.Context, tareaId int64) ([]entities.SubTarea, error) {
+	return s.subTareaRepository.ObtenerPorTareaId(context, tareaId)
+}
+
 func (s *SubTareaService) ActualizarSubTarea(context context.Context, subTarea *entities.SubTarea) error {
 
 	if subTarea == nil {
@@ -130,7 +134,7 @@ func (s *SubTareaService) EliminarSubTarea(context context.Context, subTareaId i
 	)
 }
 
-func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId int64) error {
+func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId int64, estaTerminada bool) error {
 	if subTareaId <= 0 {
 		return errors.New("el id de la subtarea no es válido")
 	}
@@ -153,7 +157,7 @@ func (s *SubTareaService) CompletarSubTarea(context context.Context, subTareaId 
 		)
 	}
 
-	subTarea.EstaTerminada = true
+	subTarea.EstaTerminada = estaTerminada
 
 	return s.subTareaRepository.Actualizar(
 		context,

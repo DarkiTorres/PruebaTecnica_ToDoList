@@ -24,6 +24,36 @@ func NewSubTareaHandler(
 	}
 }
 
+func (h *SubTareaHandler) ObtenerPorTareaId(c *gin.Context) {
+
+	tareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || tareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la tarea no es válido",
+		})
+		return
+	}
+
+	subTareas, err := h.service.ObtenerPorTareaId(
+		c.Request.Context(),
+		tareaId,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, subTareas)
+}
+
 func (h *SubTareaHandler) Crear(c *gin.Context) {
 
 	tareaId, err := strconv.ParseInt(
@@ -65,5 +95,55 @@ func (h *SubTareaHandler) Crear(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, subTarea)
+	response := tareas.SubTareaResponse{
+		Id:            subTarea.Id,
+		TareaId:       subTarea.TareaId,
+		Titulo:        subTarea.Titulo,
+		EstaTerminada: subTarea.EstaTerminada,
+		EstaEliminada: subTarea.EstaEliminada,
+		CreadoEl:      subTarea.CreadoEl,
+		CreadoPor:     subTarea.CreadoPor,
+		ModificadoEl:  subTarea.ModificadoEl,
+		ModificadoPor: subTarea.ModificadoPor,
+	}
+
+	c.JSON(http.StatusCreated, response)
+}
+
+func (h *SubTareaHandler) Completar(c *gin.Context) {
+
+	subTareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || subTareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la subtarea no es válido",
+		})
+		return
+	}
+
+	var request tareas.CompletarTareaRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El cuerpo de la solicitud no es válido",
+		})
+		return
+	}
+
+	if err := h.service.CompletarSubTarea(
+		c.Request.Context(),
+		subTareaId,
+		request.EstaTerminada,
+	); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

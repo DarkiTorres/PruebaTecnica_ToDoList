@@ -102,7 +102,7 @@ func (s *TareaService) CrearTarea(
 	)
 }
 
-func (s *TareaService) CompletarTarea(context context.Context, tareaId int64) error {
+func (s *TareaService) CompletarTarea(context context.Context, tareaId int64, estaTerminada bool) error {
 
 	if tareaId <= 0 {
 		return errors.New("el id de la tarea no es válido")
@@ -132,14 +132,14 @@ func (s *TareaService) CompletarTarea(context context.Context, tareaId int64) er
 		}
 	}
 
-	tarea.EstaTerminada = true
+	tarea.EstaTerminada = estaTerminada
 
 	return s.tareaRepository.Actualizar(
 		context, tarea,
 	)
 }
 
-func (s *TareaService) ActualizarTarea(context context.Context, tarea *entities.Tarea) error {
+func (s *TareaService) ActualizarTarea(context context.Context, tarea *entities.Tarea, asignadoA int) error {
 	if tarea == nil {
 		return errors.New("la tarea no puede ser nula")
 	}
@@ -148,13 +148,59 @@ func (s *TareaService) ActualizarTarea(context context.Context, tarea *entities.
 		return errors.New("el id de la tarea no es válido")
 	}
 
+	if asignadoA <= 0 {
+		return errors.New("El usuario asignado no es valido.")
+	}
+
 	if err := validators.ValidarTarea(tarea); err != nil {
 		return err
 	}
 
-	return s.tareaRepository.Actualizar(
+	asignado, err := s.usuarioRepository.ObtenerPorId(
+		context, asignadoA,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if asignado == nil {
+		return errors.New("El usuario asignado no existe.")
+	}
+
+	if asignado.EstaDesactivado {
+		return errors.New("El usuario asignado esta desactivado.")
+	}
+
+	if err := s.tareaRepository.Actualizar(context, tarea); err != nil {
+		return err
+	}
+
+	relaciones, err := s.tareaUsuarioRepository.ObtenerPorTareaId(
 		context,
-		tarea,
+		tarea.Id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	for _, relacion := range relaciones {
+		if err := s.tareaUsuarioRepository.Eliminar(
+			context,
+			tarea.Id,
+			relacion.UsuarioId,
+		); err != nil {
+			return err
+		}
+	}
+
+	return s.tareaUsuarioRepository.Crear(
+		context,
+		&entities.TareaUsuario{
+			TareaId:   tarea.Id,
+			UsuarioId: asignadoA,
+		},
 	)
 }
 
