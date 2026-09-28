@@ -134,6 +134,10 @@ func (s *TareaService) CompletarTarea(context context.Context, tareaId int64, es
 
 	tarea.EstaTerminada = estaTerminada
 
+	if estaTerminada && tarea.FechaEntrega != nil && tarea.FechaEntrega.Before(time.Now()) {
+		tarea.EstaEliminada = true
+	}
+
 	return s.tareaRepository.Actualizar(
 		context, tarea,
 	)

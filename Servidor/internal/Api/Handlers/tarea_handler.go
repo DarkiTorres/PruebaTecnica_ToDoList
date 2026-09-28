@@ -400,8 +400,28 @@ func (h *TareaHandler) Completar(c *gin.Context) {
 		})
 		return
 	}
-	c.Status(http.StatusNoContent)
+
+	tarea, err := h.service.ObtenerTareaPorId(c.Request.Context(), tareaId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := h.construirTareaResponse(c, *tarea)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
+
 func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 	usuarioId, err := strconv.Atoi(
 		c.Param("id"),
