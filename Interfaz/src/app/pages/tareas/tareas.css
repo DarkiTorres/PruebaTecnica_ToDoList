@@ -87,6 +87,13 @@
   opacity: 0.85;
 }
 
+.tarea-row.terminada {
+  background-color: #f0faf4;
+}
+
+.tarea-row.terminada:hover {
+  background-color: #e3f5ea;
+}
 
 /* =========================
    LISTA

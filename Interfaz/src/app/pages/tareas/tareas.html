@@ -33,7 +33,11 @@
     <!-- Tareas -->
     @for (tarea of obtenerTareasPagina(); track tarea.id) {
 
-        <article class="tarea-row" [class.con-asignado]="usuarioActual()?.RolId === 1">
+        <article 
+        class="tarea-row" 
+        [class.con-asignado]="usuarioActual()?.RolId === 1"
+        [class.terminada]="tarea.estaTerminada"
+        >
 
         <div class="tarea-info">
 
