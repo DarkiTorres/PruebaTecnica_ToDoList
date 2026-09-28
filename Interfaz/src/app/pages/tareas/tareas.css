@@ -96,11 +96,6 @@
   width: 100%;
 }
 
-
-/* =========================
-   COLUMNAS
-   ========================= */
-
 .tareas-columns {
   display: grid;
 
@@ -121,10 +116,16 @@
   font-weight: 600;
 }
 
+.tareas-columns.con-asignado {
+  grid-template-columns:
+    minmax(250px, 2fr)
+    150px
+    130px
+    130px
+    120px
+    150px;
+}
 
-/* =========================
-   FILA
-   ========================= */
 
 .tarea-row {
   display: grid;
@@ -145,6 +146,16 @@
   box-sizing: border-box;
 
   transition: background-color 0.15s ease;
+}
+
+.tarea-row.con-asignado {
+  grid-template-columns:
+    minmax(250px, 2fr)
+    150px
+    130px
+    130px
+    120px
+    150px;
 }
 
 .tarea-row:hover {
@@ -276,26 +287,45 @@
     padding: 28px 24px;
   }
 
-  .tareas-columns,
-  .tarea-row {
+  /* =========================
+     COLABORADOR
+     ========================= */
+
+  .tareas-columns:not(.con-asignado),
+  .tarea-row:not(.con-asignado) {
     grid-template-columns:
       minmax(200px, 2fr)
-      110px
       110px
       100px
       120px;
   }
 
-  .tarea-fecha {
-    display: none;
+
+  /* =========================
+     LÍDER
+     ========================= */
+
+  .tareas-columns.con-asignado,
+  .tarea-row.con-asignado {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      120px
+      110px
+      100px
+      120px;
   }
 
-  .tareas-columns span:nth-child(3) {
+
+  /* =========================
+     OCULTAR ENTREGA
+     ========================= */
+
+  .tarea-fecha,
+  .columna-entrega {
     display: none;
   }
 
 }
-
 
 /* =========================
    MÓVIL
@@ -335,18 +365,35 @@
   /* Convertimos cada fila en tarjeta */
 
   .tarea-row {
-    display: block;
+    display: grid;
 
-    min-height: auto;
+    grid-template-columns:
+        minmax(250px, 2fr)
+        130px
+        130px
+        120px
+        150px;
 
-    margin-bottom: 12px;
+    align-items: center;
 
-    padding: 18px;
+    min-height: 72px;
 
-    border-radius: 10px;
+    padding: 12px;
 
-    background-color: #f7f7f7;
-  }
+    box-sizing: border-box;
+
+    transition: background-color 0.15s ease;
+    }
+
+    .tarea-row.con-asignado {
+    grid-template-columns:
+        minmax(250px, 2fr)
+        150px
+        130px
+        130px
+        120px
+        150px;
+    }
 
 
   .tarea-info strong {

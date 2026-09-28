@@ -7,21 +7,23 @@
       <p>Gestiona tus tareas y pendientes</p>
     </div>
 
-    <button class="btn-primary">
+    <button class="btn-primary" (click)="abrirNuevaTarea()">
       + Nueva tarea
     </button>
 
   </header>
 
-
   <section class="tareas-list">
 
     <!-- Encabezado de la lista -->
-    <div class="tareas-columns">
+    <div class="tareas-columns" [class.con-asignado]="usuarioActual()?.RolId === 1">
 
       <span>Tarea</span>
+      @if (usuarioActual()?.RolId === 1) {
+        <span>Asignado a</span>
+      }
       <span>Prioridad</span>
-      <span>Entrega</span>
+      <span class="columna-entrega">Entrega</span>
       <span>Estado</span>
       <span>Acciones</span>
 
@@ -31,7 +33,7 @@
     <!-- Tareas -->
     @for (tarea of obtenerTareasPagina(); track tarea.id) {
 
-      <article class="tarea-row">
+        <article class="tarea-row" [class.con-asignado]="usuarioActual()?.RolId === 1">
 
         <div class="tarea-info">
 
@@ -46,6 +48,12 @@
           }
 
         </div>
+
+        @if (usuarioActual()?.RolId === 1) {
+        <div class="tarea-asignado">
+            {{ tarea.asignadoA || 'Sin asignar' }}
+        </div>
+        }
 
 
         <div 
@@ -82,7 +90,7 @@
 
 
         <div class="tarea-actions">
-            <button title="Editar">
+            <button title="Editar" (click)="editarTarea(tarea)">
                 ✏️
             </button>
             <button title="Subtareas" (click)="verSubTareas(tarea)">
@@ -139,6 +147,19 @@
   <app-sub-tareas-modal
     [tarea]="tareaSeleccionada()"
     [subtareas]="subTareasSeleccionadas()"
+    [usuarioActual]="usuarioActual()"
     (cerrar)="cerrarSubTareas()"
+  />
+}
+
+@if (mostrarNuevaTarea) {
+  <app-nueva-tarea-modal 
+    [prioridades]="prioridades()"
+    [usuarios]="usuarios()"
+    [usuarioActual]="usuarioActual()"
+    [tareaEditar]="tareaSeleccionada()"
+    [modoEdicion]="modoEdicion"
+    (cerrar)="cerrarNuevaTarea()"
+    (crear)="guardarTarea($event)"
   />
 }
