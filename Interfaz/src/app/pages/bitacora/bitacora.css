@@ -1,0 +1,329 @@
+.bitacora-page {
+  width: 100%;
+
+  padding: 32px 40px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+.bitacora-header {
+  margin-bottom: 30px;
+}
+
+.bitacora-header h1 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.bitacora-header p {
+  margin: 6px 0 0;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   FILTROS
+   ========================= */
+
+.bitacora-filtros {
+  display: flex;
+
+  gap: 6px;
+
+  margin-bottom: 20px;
+}
+
+.bitacora-filtros button {
+  border: none;
+
+  border-radius: 7px;
+
+  padding: 8px 14px;
+
+  background-color: transparent;
+
+  color: #666;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+.bitacora-filtros button:hover {
+  background-color: #f0f0f0;
+}
+
+.bitacora-filtros button.activo {
+  background-color: #eeeeee;
+
+  color: #222;
+
+  font-weight: 600;
+}
+
+
+/* =========================
+   COLUMNAS
+   ========================= */
+
+.bitacora-columns,
+.bitacora-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(250px, 2fr)
+    150px
+    110px
+    140px
+    130px;
+
+  align-items: center;
+}
+
+.bitacora-columns {
+  padding: 0 12px 12px;
+
+  color: #777;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bitacora-row {
+  min-height: 72px;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  transition: background-color 0.15s ease;
+}
+
+.bitacora-row:hover {
+  background-color: #f7f7f7;
+}
+
+
+/* =========================
+   INFORMACIÓN
+   ========================= */
+
+.tarea-info {
+  min-width: 0;
+}
+
+.tarea-info strong {
+  display: block;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+.tarea-info p {
+  margin: 5px 0 0;
+
+  color: #777;
+
+  font-size: 13px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   ASIGNADO
+   ========================= */
+
+.tarea-asignado {
+  color: #444;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   ESTADO
+   ========================= */
+
+.estado {
+  display: inline-flex;
+
+  width: fit-content;
+
+  padding: 5px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 500;
+}
+
+.estado.terminada {
+  background-color: #dcf5e7;
+
+  color: #16834b;
+}
+
+.estado.eliminada {
+  background-color: #ffe1e1;
+
+  color: #dc2626;
+}
+
+
+/* =========================
+   FECHA
+   ========================= */
+
+.tarea-fecha {
+  color: #666;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   ACCIONES
+   ========================= */
+
+.tarea-actions {
+  display: flex;
+
+  gap: 6px;
+}
+
+.tarea-actions button {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.tarea-actions button:hover {
+  background-color: #eeeeee;
+}
+
+
+/* =========================
+   SIN TAREAS
+   ========================= */
+
+.sin-tareas {
+  padding: 40px 20px;
+
+  text-align: center;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .bitacora-page {
+    padding: 28px 24px;
+  }
+
+  .bitacora-columns,
+  .bitacora-row {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      120px
+      110px
+      130px;
+  }
+
+  .bitacora-columns span:nth-child(4),
+  .tarea-fecha {
+    display: none;
+  }
+
+}
+
+
+/* =========================
+   MÓVIL
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .bitacora-page {
+    padding: 20px 16px;
+  }
+
+  .bitacora-header h1 {
+    font-size: 24px;
+  }
+
+  .bitacora-header p {
+    font-size: 13px;
+  }
+
+  .bitacora-filtros {
+    overflow-x: auto;
+  }
+
+  .bitacora-columns {
+    display: none;
+  }
+
+  .bitacora-row {
+    display: block;
+
+    min-height: auto;
+
+    margin-bottom: 12px;
+
+    padding: 18px;
+
+    border-radius: 10px;
+
+    background-color: #f7f7f7;
+  }
+
+  .tarea-asignado {
+    margin-top: 12px;
+  }
+
+  .estado {
+    margin-top: 12px;
+  }
+
+  .tarea-actions {
+    margin-top: 16px;
+  }
+
+}

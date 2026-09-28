@@ -157,6 +157,21 @@ export class Tareas {
     ).subscribe({
       next: tareaActualizada => {
 
+        if (tareaActualizada.estaEliminada) {
+          this.tareas.update(
+            tareas =>
+              tareas.filter(t => t.id !== tareaActualizada.id)
+          );
+
+          const totalPaginas = this.obtenerTotalPaginas();
+
+          if (this.paginaActual() > totalPaginas) {
+            this.paginaActual.set(totalPaginas);
+          }
+
+          return;
+        }
+
         this.tareas.update(
           tareas => 
             tareas.map(t =>
@@ -230,27 +245,43 @@ export class Tareas {
     const checkbox = event.target as HTMLInputElement;
 
     const estadoAnterior = tarea.estaTerminada;
-    const nuevoEstado = !tarea.estaTerminada;
+    const nuevoEstado = !estadoAnterior;
 
     this.tareaService.completar(
       tarea.id,
       nuevoEstado
     ).subscribe({
 
-      next: () => {
+      next: tareaActualizada => {
 
+        // La tarea fue soft deleteada por el backend
+        if (tareaActualizada.estaEliminada) {
+
+          this.tareas.update(
+            tareas =>
+              tareas.filter(t => t.id !== tareaActualizada.id)
+          );
+
+          const totalPaginas = this.obtenerTotalPaginas();
+
+          if (this.paginaActual() > totalPaginas) {
+            this.paginaActual.set(
+              Math.max(1, totalPaginas)
+            );
+          }
+
+          return;
+        }
+
+        // La tarea sigue activa
         this.tareas.update(
           tareas =>
             tareas.map(t =>
-              t.id === tarea.id
-                ? {
-                    ...t,
-                    estaTerminada: nuevoEstado
-                  }
+              t.id === tareaActualizada.id
+                ? tareaActualizada
                 : t
             )
         );
-
       },
 
       error: error => {
@@ -263,27 +294,26 @@ export class Tareas {
         checkbox.checked = estadoAnterior;
 
         this.tareas.update(
-          tareas => 
+          tareas =>
             tareas.map(t =>
-              t.id === tarea.id ? {
-                ...t,
-                estaTerminada: estadoAnterior
-              } 
-              : t
+              t.id === tarea.id
+                ? {
+                    ...t,
+                    estaTerminada: estadoAnterior
+                  }
+                : t
             )
-        )
+        );
 
         if (error.status === 400) {
           this.abrirModal(
             'Tarea no completada.',
             'La tarea tiene subtareas pendientes.'
-          )
+          );
         }
-
       }
 
     });
-
   }
 
   marcarTareaPendiente(): void {

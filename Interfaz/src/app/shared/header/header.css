@@ -69,3 +69,38 @@
 .opcion-usuario:hover {
   background: #f3f3f3;
 }
+.opcion-menu {
+  display: block;
+
+  width: 100%;
+
+  padding: 8px 12px;
+
+  box-sizing: border-box;
+
+  border: none;
+
+  background: transparent;
+
+  color: inherit;
+
+  font-size: 14px;
+
+  text-align: left;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.opcion-menu:hover {
+  background-color: #f0f0f0;
+}
+
+.separador {
+  height: 1px;
+
+  margin: 6px 0;
+
+  background-color: #eeeeee;
+}

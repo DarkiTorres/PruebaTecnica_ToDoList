@@ -366,6 +366,35 @@ func (h *TareaHandler) Eliminar(c *gin.Context) {
 
 	c.AbortWithStatus(http.StatusNoContent)
 }
+
+func (h *TareaHandler) EliminarFisicamente(c *gin.Context) {
+
+	tareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || tareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la tarea no es válido",
+		})
+		return
+	}
+
+	if err := h.service.EliminarFisicamente(
+		c.Request.Context(),
+		tareaId,
+	); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
 func (h *TareaHandler) Completar(c *gin.Context) {
 
 	tareaId, err := strconv.ParseInt(
@@ -400,8 +429,28 @@ func (h *TareaHandler) Completar(c *gin.Context) {
 		})
 		return
 	}
-	c.Status(http.StatusNoContent)
+
+	tarea, err := h.service.ObtenerTareaPorId(c.Request.Context(), tareaId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := h.construirTareaResponse(c, *tarea)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
+
 func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 	usuarioId, err := strconv.Atoi(
 		c.Param("id"),
@@ -451,6 +500,48 @@ func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 
 	c.JSON(http.StatusOK, respuestas)
 
+}
+
+func (h *TareaHandler) ObtenerBitacora(c *gin.Context) {
+
+	tareasBitacora, err := h.service.ObtenerBitacora(
+		c.Request.Context(),
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	responses := make(
+		[]tareas.TareaResponse,
+		0,
+		len(tareasBitacora),
+	)
+
+	for _, tarea := range tareasBitacora {
+
+		response, err := h.construirTareaResponse(
+			c,
+			tarea,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		responses = append(
+			responses,
+			response,
+		)
+	}
+
+	c.JSON(http.StatusOK, responses)
 }
 
 func (h *TareaHandler) construirTareaResponse(
@@ -533,4 +624,66 @@ func (h *TareaHandler) construirTareaResponse(
 		AsignadoA:     asignadoA,
 		SubTareas:     subTareasResponse,
 	}, nil
+}
+
+func (h *TareaHandler) Restaurar(c *gin.Context) {
+
+	tareaId, err := strconv.ParseInt(
+		c.Param("id"),
+		10,
+		64,
+	)
+
+	if err != nil || tareaId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El id de la tarea no es válido",
+		})
+		return
+	}
+
+	var request tareas.RestaurarTareaRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "El cuerpo de la solicitud no es válido",
+		})
+		return
+	}
+
+	if err := h.service.RestaurarTarea(
+		c.Request.Context(),
+		tareaId,
+		request.ModificadoPor,
+	); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	tarea, err := h.service.ObtenerTareaPorId(
+		c.Request.Context(),
+		tareaId,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := h.construirTareaResponse(
+		c,
+		*tarea,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

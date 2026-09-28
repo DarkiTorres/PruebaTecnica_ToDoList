@@ -38,6 +38,10 @@ func ConfigurarRutas(
 	router.PATCH("/tareas/:id/eliminar", tareaHandler.Eliminar)
 	router.PATCH("/tareas/:id/completar", tareaHandler.Completar)
 	router.GET("/usuarios/:id/tareas", tareaHandler.ObtenerPorUsuario)
+	router.DELETE("/tareas/:id", tareaHandler.EliminarFisicamente)
+
+	router.PATCH("/tareas/:id/restaurar", tareaHandler.Restaurar)
+	router.GET("/bitacora", tareaHandler.ObtenerBitacora)
 
 	router.POST("/tareas/:id/subtareas", subtareaHandler.Crear)
 	router.GET("/tareas/:id/subtareas", subtareaHandler.ObtenerPorTareaId)

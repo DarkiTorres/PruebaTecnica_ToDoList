@@ -2,20 +2,59 @@
 
   <div class="modal">
 
-    <div class="modal-icon">
+    <button
+      type="button"
+      class="btn-cerrar"
+      (click)="cerrarModal()"
+    >
+      ×
+    </button>
+
+    <div class="modal-icono">
       ⚠️
     </div>
 
-    <h2>{{ titulo }}</h2>
+    <h2>
+      {{ titulo }}
+    </h2>
 
-    <p>{{ mensaje }}</p>
+    <p>
+      {{ mensaje }}
+    </p>
 
-    <button
-      type="button"
-      (click)="cerrarModal()"
-    >
-      Aceptar
-    </button>
+    <div class="modal-footer">
+
+      @if (esConfirmacion) {
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cerrarModal()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-confirmar"
+          (click)="confirmarModal()"
+        >
+          Eliminar
+        </button>
+
+      } @else {
+
+        <button
+          type="button"
+          class="btn-aceptar"
+          (click)="cerrarModal()"
+        >
+          Aceptar
+        </button>
+
+      }
+
+    </div>
 
   </div>
 

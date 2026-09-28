@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TestApi } from './pages/test-api/test-api';
+import { Bitacora } from './pages/bitacora/bitacora';
 
 export const routes: Routes = [
     {
@@ -16,5 +17,9 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'tareas',
         pathMatch: 'full'
+    },
+    {
+        path: 'bitacora',
+        component: Bitacora
     }
 ];
