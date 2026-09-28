@@ -304,3 +304,30 @@ func (s *TareaService) ObtenerTareasPorUsuario(
 		usuarioId,
 	)
 }
+
+func (s *TareaService) ObtenerBitacora(context context.Context) ([]entities.Tarea, error) {
+
+	tareasActivas, err := s.tareaRepository.ObtenerTodos(context)
+
+	if err != nil {
+		return nil, err
+	}
+
+	tareasEliminadas, err := s.tareaRepository.ObtenerEliminadas(context)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var bitacora []entities.Tarea
+
+	for _, tarea := range tareasActivas {
+		if tarea.EstaTerminada {
+			bitacora = append(bitacora, tarea)
+		}
+	}
+
+	bitacora = append(bitacora, tareasEliminadas...)
+
+	return bitacora, nil
+}

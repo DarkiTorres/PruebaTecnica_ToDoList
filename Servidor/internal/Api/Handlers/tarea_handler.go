@@ -473,6 +473,48 @@ func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 
 }
 
+func (h *TareaHandler) ObtenerBitacora(c *gin.Context) {
+
+	tareasBitacora, err := h.service.ObtenerBitacora(
+		c.Request.Context(),
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	responses := make(
+		[]tareas.TareaResponse,
+		0,
+		len(tareasBitacora),
+	)
+
+	for _, tarea := range tareasBitacora {
+
+		response, err := h.construirTareaResponse(
+			c,
+			tarea,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		responses = append(
+			responses,
+			response,
+		)
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
 func (h *TareaHandler) construirTareaResponse(
 	c *gin.Context,
 	tarea entities.Tarea,

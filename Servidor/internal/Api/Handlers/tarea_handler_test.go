@@ -48,6 +48,12 @@ type SubTareaRepositoryMock struct {
 
 var _ repositories.ISubTareaRepository = (*SubTareaRepositoryMock)(nil)
 
+func (m *TareaServiceMock) ObtenerBitacora(
+	context context.Context,
+) ([]entities.Tarea, error) {
+	return nil, nil
+}
+
 func (m *TareaServiceMock) CompletarTarea(
 	context context.Context,
 	tareaId int64,

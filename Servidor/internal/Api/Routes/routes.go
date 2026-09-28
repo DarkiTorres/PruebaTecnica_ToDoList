@@ -39,6 +39,8 @@ func ConfigurarRutas(
 	router.PATCH("/tareas/:id/completar", tareaHandler.Completar)
 	router.GET("/usuarios/:id/tareas", tareaHandler.ObtenerPorUsuario)
 
+	router.GET("/bitacora", tareaHandler.ObtenerBitacora)
+
 	router.POST("/tareas/:id/subtareas", subtareaHandler.Crear)
 	router.GET("/tareas/:id/subtareas", subtareaHandler.ObtenerPorTareaId)
 
