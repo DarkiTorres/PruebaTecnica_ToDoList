@@ -6,6 +6,7 @@ type ActualizarTareaRequest struct {
 	PrioridadId   int16                       `json:"prioridadId"`
 	FechaEntrega  *string                     `json:"fechaEntrega"`
 	ModificadoPor int                         `json:"modificadoPor"`
+	AsignadoA     int                         `json:"asignadoA"`
 	SubTareas     []ActualizarSubTareaRequest `json:"subTareas"`
 }
 
