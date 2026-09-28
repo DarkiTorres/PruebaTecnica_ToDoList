@@ -331,3 +331,98 @@ func (s *TareaService) ObtenerBitacora(context context.Context) ([]entities.Tare
 
 	return bitacora, nil
 }
+
+func (s *TareaService) RestaurarTarea(
+	context context.Context,
+	tareaId int64,
+	modificadoPor int,
+) error {
+
+	if tareaId <= 0 {
+		return errors.New("el id de la tarea no es válido")
+	}
+
+	if modificadoPor <= 0 {
+		return errors.New("el usuario modificador no es válido")
+	}
+
+	tarea, err := s.tareaRepository.ObtenerPorId(
+		context,
+		tareaId,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if tarea == nil {
+		return errors.New("la tarea no existe")
+	}
+
+	if !tarea.EstaEliminada {
+		return errors.New("la tarea no está eliminada")
+	}
+
+	usuario, err := s.usuarioRepository.ObtenerPorId(
+		context,
+		modificadoPor,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if usuario == nil {
+		return errors.New("el usuario no existe")
+	}
+
+	if usuario.EstaDesactivado {
+		return errors.New("el usuario está desactivado")
+	}
+
+	ahora := time.Now()
+
+	tarea.EstaTerminada = false
+	tarea.EstaEliminada = false
+	tarea.ModificadoEl = &ahora
+	tarea.ModificadoPor = &modificadoPor
+
+	return s.tareaRepository.Actualizar(
+		context,
+		tarea,
+	)
+}
+
+func (s *TareaService) EliminarFisicamente(
+	context context.Context,
+	tareaId int64,
+) error {
+
+	if tareaId <= 0 {
+		return errors.New("el id de la tarea no es válido")
+	}
+
+	tarea, err := s.tareaRepository.ObtenerPorId(
+		context,
+		tareaId,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if tarea == nil {
+		return errors.New("la tarea no existe")
+	}
+
+	if !tarea.EstaEliminada {
+		return errors.New(
+			"No se puede eliminar físicamente una tarea activa.",
+		)
+	}
+
+	return s.tareaRepository.EliminarFisicoPorId(
+		context,
+		tareaId,
+	)
+}
