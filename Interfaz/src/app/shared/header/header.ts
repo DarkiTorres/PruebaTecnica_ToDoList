@@ -2,16 +2,18 @@ import { Component, inject } from '@angular/core';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Usuario } from '../../models/usuario';
 import { UsuarioStateService } from '../../core/services/usuario-state';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
   private readonly usuarioService = inject(UsuarioService);
   private readonly usuarioState = inject(UsuarioStateService);
+  private readonly router = inject(Router);
 
   usuarios: Usuario[] = [];
 
@@ -41,6 +43,10 @@ export class Header {
   seleccionarUsuario(usuario: Usuario): void {
     this.usuarioState.establecerUsuario(usuario);
     this.menuAbierto = false;
+  }
+
+  esBitacora(): boolean {
+    return this.router.url === '/bitacora';
   }
 
 }

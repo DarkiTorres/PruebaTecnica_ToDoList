@@ -1,13 +1,11 @@
 <header class="header">
+
     <div class="logo">
         ToDo List
     </div>
 
     <div class="usuario">
-        <button 
-            class="usuario-button"
-            (click)="cambiarMenu()"
-        >
+        <button class="usuario-button" (click)="cambiarMenu()">
             @if (usuarioActual()) {
                 {{ usuarioActual()!.Nombre }}
             }
@@ -18,12 +16,22 @@
         @if (menuAbierto) {
             <div class="menu">
                 @for (usuario of usuarios; track usuario.Id) {
-                    <button 
-                        class="opcion-usuario"
-                        (click)="seleccionarUsuario(usuario)"
-                    >
-                        {{usuario.Nombre}}
+                    <button class="opcion-usuario" (click)="seleccionarUsuario(usuario)">
+                        {{ usuario.Nombre }}
                     </button>
+                }
+
+                @if (usuarioActual()?.RolId === 1) {
+                    <div class="separador"></div>
+                    @if (esBitacora()) {
+                        <a class="opcion-menu" routerLink="/tareas" (click)="menuAbierto = false">
+                            Tareas
+                        </a>
+                    } @else {
+                        <a class="opcion-menu" routerLink="/bitacora" (click)="menuAbierto = false">
+                            Bitácora
+                        </a>
+                    }
                 }
             </div>
         }
