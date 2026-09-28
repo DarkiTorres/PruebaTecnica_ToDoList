@@ -62,12 +62,33 @@
 
     <div class="modal-footer">
 
-      <button
-        type="button"
-        class="btn-nueva"
-      >
+      <button type="button" class="btn-nueva" (click)="abrirNuevaSubTarea()">
         + Nueva subtarea
       </button>
+
+      @if (mostrarNuevaSubTarea()) {
+        <div class="nueva-subtarea">
+
+          <div class="campo">
+            <label for="tituloNuevaSubTarea"> Título </label>
+            
+            <input id="tituloNuevaSubTarea" type="text" [(ngModel)]="tituloNuevaSubTarea" maxlength="200" placeholder="Título de la subtarea">
+            <small>{{tituloNuevaSubTarea.length}}/200</small>
+          </div>
+          
+          <div class="nueva-subtarea-actions">
+
+          <button type="button" class="btn-cancelar" (click)="cancelarNuevaSubTarea()">
+            Cancelar
+          </button>
+
+          <button type="button" class="btn-guardar" (click)="crearSubTarea()">
+            Crear
+          </button>
+
+        </div>
+      </div>
+      }
 
     </div>
 

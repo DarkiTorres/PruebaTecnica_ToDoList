@@ -202,3 +202,72 @@
 .switch input:checked + .slider::before {
   transform: translateX(16px);
 }
+
+.nueva-subtarea {
+  margin-top: 16px;
+  padding-top: 16px;
+
+  border-top: 1px solid #eeeeee;
+}
+
+.nueva-subtarea .campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nueva-subtarea label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nueva-subtarea input {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+
+  outline: none;
+
+  box-sizing: border-box;
+}
+
+.nueva-subtarea-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.nueva-subtarea-actions button {
+  border: none;
+  border-radius: 7px;
+
+  padding: 9px 14px;
+
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #eeeeee;
+}
+
+.btn-guardar {
+  background: #16834b;
+  color: white;
+}
+.nueva-subtarea .campo small {
+  align-self: flex-end;
+
+  color: #777;
+  font-size: 11px;
+}
+.nueva-subtarea .campo small {
+  align-self: flex-end;
+
+  color: #777;
+  font-size: 11px;
+}
