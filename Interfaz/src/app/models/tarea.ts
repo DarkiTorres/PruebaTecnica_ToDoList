@@ -2,6 +2,8 @@ import { SubTarea } from "./subtarea";
 
 export interface Tarea {
     id: number;
+    asignadoAId?: number;
+    asignadoA?: string;
     titulo: string;
     descripcion?: string;
     prioridadId: number;
