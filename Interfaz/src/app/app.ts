@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from './shared/header/header';
+import { Conexion } from './core/services/conexion';
 
 @Component({
   selector: 'app-root',
@@ -13,4 +14,5 @@ import { Header } from './shared/header/header';
 })
 export class App {
   protected readonly title = signal('interfaz');
+  readonly conexion = inject(Conexion);
 }
