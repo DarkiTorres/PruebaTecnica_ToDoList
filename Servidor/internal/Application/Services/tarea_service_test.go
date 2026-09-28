@@ -441,6 +441,7 @@ func TestActualizarTarea_TareaValida_ActualizaTarea(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		tarea,
+		1,
 	)
 
 	if err != nil {
@@ -485,6 +486,7 @@ func TestActualizarTarea_TituloVacio_NoActualiza(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		tarea,
+		1,
 	)
 
 	if err == nil {
@@ -526,6 +528,7 @@ func TestActualizarTarea_ErrorAlActualizar_RegresaError(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		tarea,
+		1,
 	)
 
 	if !errors.Is(err, errorEsperado) {
@@ -1438,6 +1441,7 @@ func TestActualizarTarea_TareaNil_RegresaError(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		nil,
+		2,
 	)
 
 	if err == nil {
@@ -1470,6 +1474,7 @@ func TestActualizarTarea_IdInvalido_RegresaError(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		tarea,
+		1,
 	)
 
 	if err == nil {
@@ -1502,6 +1507,7 @@ func TestActualizarTarea_TituloVacio_RegresaError(t *testing.T) {
 	err := service.ActualizarTarea(
 		context.Background(),
 		tarea,
+		1,
 	)
 
 	if err == nil {
