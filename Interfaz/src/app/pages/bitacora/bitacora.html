@@ -1,0 +1,158 @@
+<div class="bitacora-page">
+
+  <header class="bitacora-header">
+
+    <div>
+      <h1>Bitácora</h1>
+
+      <p>
+        Historial de tareas terminadas y eliminadas
+      </p>
+    </div>
+
+  </header>
+
+
+  <section class="bitacora-list">
+
+    <div class="bitacora-filtros">
+
+      <button
+        [class.activo]="filtro() === 'todas'"
+        (click)="cambiarFiltro('todas')"
+      >
+        Todas
+      </button>
+
+      <button
+        [class.activo]="filtro() === 'terminadas'"
+        (click)="cambiarFiltro('terminadas')"
+      >
+        Terminadas
+      </button>
+
+      <button
+        [class.activo]="filtro() === 'eliminadas'"
+        (click)="cambiarFiltro('eliminadas')"
+      >
+        Eliminadas
+      </button>
+
+    </div>
+
+
+    <div class="bitacora-columns">
+
+      <span>Tarea</span>
+      <span>Asignado a</span>
+      <span>Estado</span>
+      <span>Fecha de entrega</span>
+      <span>Acciones</span>
+
+    </div>
+
+
+    @if (obtenerTareas().length === 0) {
+
+      <div class="sin-tareas">
+        No hay tareas en este filtro.
+      </div>
+
+    } @else {
+
+      @for (
+        tarea of obtenerTareas();
+        track tarea.id
+      ) {
+
+        <article class="bitacora-row">
+
+          <div class="tarea-info">
+
+            <strong>
+              {{ tarea.titulo }}
+            </strong>
+
+            @if (tarea.descripcion) {
+              <p>
+                {{ tarea.descripcion }}
+              </p>
+            }
+
+          </div>
+
+
+          <div class="tarea-asignado">
+
+            {{ tarea.asignadoA || 'Sin asignar' }}
+
+          </div>
+
+
+          <div>
+
+            @if (tarea.estaTerminada) {
+
+              <span class="estado terminada">
+                Terminada
+              </span>
+
+            } @else {
+
+              <span class="estado eliminada">
+                Eliminada
+              </span>
+
+            }
+
+          </div>
+
+
+          <div class="tarea-fecha">
+
+            @if (tarea.fechaEntrega) {
+
+              {{ tarea.fechaEntrega }}
+
+            } @else {
+
+              <span>Sin fecha</span>
+
+            }
+
+          </div>
+
+
+          <div class="tarea-actions">
+
+            
+
+            @if (tarea.estaEliminada) {
+              <button title="Rehacer tarea" (click)="restaurarTarea(tarea)">↩</button>
+              <button title="Eliminar definitivamente" (click)="confirmarEliminarFisicamente(tarea)">
+                🗑️
+              </button>
+
+            }
+
+          </div>
+
+        </article>
+
+      }
+
+    }
+
+  </section>
+
+</div>
+
+@if (mostrarModal) {
+  <app-modal
+    [titulo]="tituloModal"
+    [mensaje]="mensajeModal"
+    (cerrar)="cerrarModal()"
+    (confirmar)="eliminarFisicamente()"
+    [esConfirmacion]="true"
+  />
+}
