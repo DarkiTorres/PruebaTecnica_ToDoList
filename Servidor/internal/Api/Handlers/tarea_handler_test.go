@@ -54,6 +54,14 @@ func (m *TareaServiceMock) ObtenerBitacora(
 	return nil, nil
 }
 
+func (m *TareaServiceMock) EliminarFisicamente(context context.Context, tareaId int64) error
+
+func (m *TareaServiceMock) RestaurarTarea(
+	context context.Context, tareaId int64, modificadoPor int,
+) error {
+	return nil
+}
+
 func (m *TareaServiceMock) CompletarTarea(
 	context context.Context,
 	tareaId int64,
