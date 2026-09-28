@@ -13,20 +13,26 @@ import (
 )
 
 type TareaHandler struct {
-	service            interfaces.ITareaService
-	subTareaService    interfaces.ISubTareaService
-	subTareaRepository repositories.ISubTareaRepository
+	service             interfaces.ITareaService
+	subTareaService     interfaces.ISubTareaService
+	subTareaRepository  repositories.ISubTareaRepository
+	tareaUsuarioService interfaces.ITareaUsuarioService
+	usuarioService      interfaces.IUsuarioService
 }
 
 func NewTareaHandler(
 	service interfaces.ITareaService,
 	subTareaService interfaces.ISubTareaService,
 	subTareaRepository repositories.ISubTareaRepository,
+	tareaUsuarioService interfaces.ITareaUsuarioService,
+	usuarioService interfaces.IUsuarioService,
 ) *TareaHandler {
 	return &TareaHandler{
-		service:            service,
-		subTareaService:    subTareaService,
-		subTareaRepository: subTareaRepository,
+		service:             service,
+		subTareaService:     subTareaService,
+		subTareaRepository:  subTareaRepository,
+		tareaUsuarioService: tareaUsuarioService,
+		usuarioService:      usuarioService,
 	}
 }
 
@@ -215,19 +221,28 @@ func (h *TareaHandler) Actualizar(c *gin.Context) {
 		fechaEntrega = &fecha
 	}
 
-	tarea := &entities.Tarea{
-		Id:            tareaId,
-		Titulo:        request.Titulo,
-		Descripcion:   request.Descripcion,
-		PrioridadId:   request.PrioridadId,
-		FechaEntrega:  fechaEntrega,
-		ModificadoEl:  func() *time.Time { ahora := time.Now(); return &ahora }(),
-		ModificadoPor: &request.ModificadoPor,
+	tarea, err := h.service.ObtenerTareaPorId(c.Request.Context(), tareaId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
+
+	ahora := time.Now()
+
+	tarea.Titulo = request.Titulo
+	tarea.Descripcion = request.Descripcion
+	tarea.PrioridadId = request.PrioridadId
+	tarea.FechaEntrega = fechaEntrega
+	tarea.ModificadoEl = &ahora
+	tarea.ModificadoPor = &request.ModificadoPor
 
 	if err := h.service.ActualizarTarea(
 		c.Request.Context(),
 		tarea,
+		request.AsignadoA,
 	); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -295,7 +310,16 @@ func (h *TareaHandler) Actualizar(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, tarea)
+	response, err := h.construirTareaResponse(c, *tarea)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *TareaHandler) Eliminar(c *gin.Context) {
@@ -376,10 +400,7 @@ func (h *TareaHandler) Completar(c *gin.Context) {
 		})
 		return
 	}
-	println("ENTRO A COMPLETAR - ESCRIBIENDO 204")
 	c.Status(http.StatusNoContent)
-	println("GIN STATUS:", c.Writer.Status())
-	println("RECORDED STATUS:", c.Writer.Status())
 }
 func (h *TareaHandler) ObtenerPorUsuario(c *gin.Context) {
 	usuarioId, err := strconv.Atoi(
@@ -470,6 +491,32 @@ func (h *TareaHandler) construirTareaResponse(
 		)
 	}
 
+	var asignadoAId *int
+	var asignadoA *string
+
+	tareasUsuario, err := h.tareaUsuarioService.ObtenerPorTareaId(c.Request.Context(), tarea.Id)
+
+	if err != nil {
+		return tareas.TareaResponse{}, err
+	}
+
+	if len(tareasUsuario) > 0 {
+
+		usuarioId := tareasUsuario[0].UsuarioId
+		asignadoAId = &usuarioId
+
+		usuario, err := h.usuarioService.ObtenerUsuarioPorId(
+			c.Request.Context(),
+			tareasUsuario[0].UsuarioId,
+		)
+
+		if err != nil {
+			return tareas.TareaResponse{}, err
+		}
+
+		asignadoA = &usuario.Nombre
+	}
+
 	return tareas.TareaResponse{
 		Id:            tarea.Id,
 		Titulo:        tarea.Titulo,
@@ -482,6 +529,8 @@ func (h *TareaHandler) construirTareaResponse(
 		CreadoPor:     tarea.CreadoPor,
 		ModificadoEl:  tarea.ModificadoEl,
 		ModificadoPor: tarea.ModificadoPor,
+		AsignadoAId:   asignadoAId,
+		AsignadoA:     asignadoA,
 		SubTareas:     subTareasResponse,
 	}, nil
 }
