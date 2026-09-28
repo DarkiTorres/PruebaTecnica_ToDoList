@@ -13,6 +13,8 @@ import { CrearTareaForm } from '../../models/crear_tarea_form';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Usuario } from '../../models/usuario';
 import { ActualizarTareaRequest } from '../../models/actualizar_tarea_request';
+import { Conexion } from '../../core/services/conexion';
+import { Cache } from '../../core/services/cache';
 
 @Component({
   selector: 'app-tareas',
@@ -26,6 +28,10 @@ export class Tareas {
   private readonly prioridadService = inject(PrioridadService);
   private readonly subTareaService = inject(SubTareaService);
   private readonly usuarioService = inject(UsuarioService);
+  private readonly conexionService = inject(Conexion);
+  private readonly cacheService = inject(Cache);
+
+  readonly conectada = this.conexionService.conectada;
 
   tareas = signal<Tarea[]>([]);
   usuarios = signal<Usuario[]>([]);
@@ -56,11 +62,23 @@ export class Tareas {
 
     effect(() => {
       const usuario = this.usuarioActual();
-
-      console.log('Usuario cambio:', usuario);
+      const conectada = this.conectada();
 
       if (!usuario) {
         this.tareas.set([]);
+        return;
+      }
+
+      if (!conectada) {
+        //Cargando de cache
+        this.tareas.set(
+          this.cacheService.obtenerTareas(usuario.Id, usuario.RolId)
+        );
+  
+        this.prioridades.set(
+          this.cacheService.obtenerPrioridades()
+        );
+
         return;
       }
 
@@ -95,6 +113,9 @@ export class Tareas {
   }
 
   crearTarea(form: CrearTareaForm): void {
+    if (!this.conectada()){
+      return;
+    }
     const usuario = this.usuarioActual();
     
     if (!usuario) {
@@ -134,6 +155,9 @@ export class Tareas {
   }
 
   actualizarTarea(form: CrearTareaForm): void {
+    if (!this.conectada()){
+      return;
+    }
     const tarea = this.tareaSeleccionada();
     const usuario = this.usuarioActual();
 
@@ -213,6 +237,9 @@ export class Tareas {
   //#endregion
 
   eliminarTarea(id: number): void {
+    if (!this.conectada()){
+      return;
+    }
 
     const usuario = this.usuarioActual();
 
@@ -241,7 +268,9 @@ export class Tareas {
   }
 
   cambiarEstadoTarea(tarea: Tarea, event: Event): void {
-
+    if (!this.conectada()){
+      return;
+    }
     const checkbox = event.target as HTMLInputElement;
 
     const estadoAnterior = tarea.estaTerminada;
@@ -352,11 +381,10 @@ export class Tareas {
 
       this.tareaService.obtenerTodas().subscribe({
         next: tareas => {
-
           console.log('Tareas del líder:', tareas);
 
           this.tareas.set(tareas);
-
+          this.cacheService.guardarTareas(usuarioId, rolId, tareas);
         },
         error: error => {
           console.error('Error al obtener tareas:', error);
@@ -373,7 +401,7 @@ export class Tareas {
           console.log('Tareas del colaborador:', tareas);
 
           this.tareas.set(tareas);
-
+          this.cacheService.guardarTareas(usuarioId, rolId, tareas);
         },
         error: error => {
           console.error(
@@ -438,10 +466,12 @@ export class Tareas {
     this.prioridadService.obtenerTodas().subscribe({
       next: prioridades => {
         console.log('Prioridades recibidas:', prioridades);
-        this.prioridades.set(prioridades)     
+        this.prioridades.set(prioridades)   
+        this.cacheService.guardarPrioridades(prioridades);  
       },
       error: error => {
         console.error('Error al obtener prioridades:', error);
+        this.cacheService.obtenerPrioridades();
       }
     })
   }
@@ -471,6 +501,9 @@ export class Tareas {
   }
 
   editarTarea(tarea: Tarea): void {
+    if (!this.conectada()){
+      return;
+    }
     this.modoEdicion = true;
     this.tareaSeleccionada.set(tarea);
     this.mostrarNuevaTarea = true;
