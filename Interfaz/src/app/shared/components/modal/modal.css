@@ -65,3 +65,52 @@
 .modal button:hover {
   opacity: 0.9;
 }
+.btn-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 24px;
+  color: #777;
+
+  cursor: pointer;
+}
+
+.btn-cancelar,
+.btn-confirmar,
+.btn-aceptar {
+  border: none;
+  border-radius: 7px;
+
+  padding: 9px 18px;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #eeeeee;
+  color: #333;
+}
+
+.btn-confirmar {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-aceptar {
+  background: #16834b;
+  color: white;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
+  margin-top: 22px;
+}
