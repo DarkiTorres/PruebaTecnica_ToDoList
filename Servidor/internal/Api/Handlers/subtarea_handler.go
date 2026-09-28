@@ -95,7 +95,19 @@ func (h *SubTareaHandler) Crear(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, subTarea)
+	response := tareas.SubTareaResponse{
+		Id:            subTarea.Id,
+		TareaId:       subTarea.TareaId,
+		Titulo:        subTarea.Titulo,
+		EstaTerminada: subTarea.EstaTerminada,
+		EstaEliminada: subTarea.EstaEliminada,
+		CreadoEl:      subTarea.CreadoEl,
+		CreadoPor:     subTarea.CreadoPor,
+		ModificadoEl:  subTarea.ModificadoEl,
+		ModificadoPor: subTarea.ModificadoPor,
+	}
+
+	c.JSON(http.StatusCreated, response)
 }
 
 func (h *SubTareaHandler) Completar(c *gin.Context) {
