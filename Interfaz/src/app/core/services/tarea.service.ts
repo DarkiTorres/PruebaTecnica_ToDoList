@@ -65,4 +65,17 @@ export class TareaService extends ApiService {
             }
         );
     }
+
+    restaurar(id: number, modificadoPor: number): Observable<Tarea> {
+        return this.http.patch<Tarea>(
+            `${this.apiUrl}/tareas/${id}/restaurar`,
+            {
+                modificadoPor
+            }
+        );
+    }
+
+    obtenerBitacora(): Observable<Tarea[]> {
+        return this.http.get<Tarea[]>(`${this.apiUrl}/bitacora`);
+    }
 }
